@@ -118,6 +118,9 @@ let package = Package(
       name: "IOSWorkspaceShellTests",
       dependencies: [
         "IOSWorkspaceShell",
+      ],
+      resources: [
+        .process("__Snapshots__"),
       ]
     ),
     .testTarget(

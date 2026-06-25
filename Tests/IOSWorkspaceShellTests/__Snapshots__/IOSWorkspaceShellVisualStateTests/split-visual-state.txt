@@ -1,0 +1,43 @@
+IOSWorkspaceShellVisualState
+navigation-style: split
+resolved-navigation: split
+title: Workspace Demo
+badges: visible
+selected: settings
+selected-presentation: fullWidth
+selected-scene: singleton
+column-preference: sidebar
+compact-path: empty
+palette: placeholder="Search demo commands and routes"
+surfaces:
+- navigation-split-view
+- route-list
+- full-width-detail
+sections:
+- Workspace [collapsed]
+- System [expanded]
+  - settings "Settings" selected enabled badge=none shortcut=Cmd+, presentation=fullWidth scene=singleton
+command-sections:
+- Workspace
+  - route:inbox "Inbox" enabled role=navigation source=navigation shortcut=Cmd+1
+  - route:review "Review" disabled role=navigation source=navigation shortcut=Cmd+2
+- System
+  - route:settings "Settings" enabled role=navigation source=navigation shortcut=Cmd+,
+  - scene:settings "Open Settings in New Window" enabled role=scene source=navigation shortcut=none
+- App
+  - app:refresh-workspace "Refresh Workspace" enabled role=appAction source=app shortcut=Cmd+R
+- Toolbar
+  - toolbar:export-workspace "Export" enabled role=toolbarAction source=toolbar shortcut=Cmd+E
+- Primary
+  - primary:new-item "New Item" enabled role=primaryAction source=primaryAction shortcut=Cmd+N
+accessibility:
+- ios-workspace-shell
+- ios-workspace-route-list
+- ios-workspace-command-search-button
+- ios-workspace-clear-recent-commands-button
+- ios-workspace-route-settings
+- ios-workspace-detail-settings
+- ios-workspace-open-scene-settings
+- ios-workspace-command-search
+- ios-workspace-command-search-field
+- ios-workspace-command-search-results
