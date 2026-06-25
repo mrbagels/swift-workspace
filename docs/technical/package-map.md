@@ -110,3 +110,14 @@ Consumer-facing adoption docs now cover:
 
 Operations docs now cover API review and release checklists. Live server-client
 distribution remains decision-gated until an app workflow proves a server API.
+
+DocC landing pages are scaffolded in each public product target:
+
+- `Sources/WorkspaceCore/WorkspaceCore.docc`
+- `Sources/WorkspaceTCA/WorkspaceTCA.docc`
+- `Sources/WorkspaceEngine/WorkspaceEngine.docc`
+- `Sources/WorkspacePersistence/WorkspacePersistence.docc`
+- `Sources/WorkspaceSQLiteData/WorkspaceSQLiteData.docc`
+- `Sources/WorkspaceCloudKit/WorkspaceCloudKit.docc`
+- `Sources/MacWorkspaceShell/MacWorkspaceShell.docc`
+- `Sources/IOSWorkspaceShell/IOSWorkspaceShell.docc`

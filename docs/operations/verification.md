@@ -40,6 +40,13 @@ swift test --package-path Examples/CustomRendererClient
 
 The full verification script runs this example check.
 
+## Documentation Checks
+
+DocC catalogs are checked into each public product target. This local SwiftPM
+toolchain does not currently expose `swift package generate-documentation`, so
+DocC generation is not part of `scripts/verify.sh` yet. Add it once the package
+uses a toolchain or plugin that supports documentation generation in CI.
+
 ## Generated Output
 
 The following are generated or local-only:
