@@ -37,6 +37,9 @@ run_step "Run swift-workspace doctor" \
 run_step "Run package tests" \
   swift test --package-path "$PROJECT_ROOT"
 
+run_step "Run custom renderer example tests" \
+  swift test --package-path "$PROJECT_ROOT/Examples/CustomRendererClient"
+
 run_step "Generate Xcode project" \
   xcodegen generate --spec "$PROJECT_ROOT/project.yml"
 

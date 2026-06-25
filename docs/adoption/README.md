@@ -1,13 +1,16 @@
 # Adoption Docs
 
-This folder will hold durable consumer guides.
+This folder holds durable consumer guides for each adoption path.
+
+Available guides:
+
+- [Custom renderer quickstart](custom-renderer.md)
+- [Persistence adapter guide](persistence.md)
 
 Planned guides:
 
-- Mac shell quickstart.
-- iOS shell quickstart.
-- Engine-only quickstart.
-- Custom renderer quickstart.
-- Prototype migration guide.
-- Persistence adapter guide.
-- CloudKit adoption guide.
+- Mac shell quickstart
+- iOS shell quickstart
+- Engine-only quickstart
+- Prototype migration guide
+- CloudKit adoption guide

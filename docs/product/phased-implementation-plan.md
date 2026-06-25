@@ -268,6 +268,15 @@ Acceptance:
 - Public docs explain which product to import.
 - Release quality does not depend on remembering prototype context.
 
+Progress:
+
+- Added a compiled `Examples/CustomRendererClient` Swift package that depends on
+  `swift-workspace` by path.
+- Demonstrated route snapshots, command sections, route metadata patches, and
+  file restoration without importing either platform shell.
+- Added adoption docs for custom renderers and persistence adapters.
+- Added custom-renderer example tests to `scripts/verify.sh`.
+
 ## Phase 8: Professional Polish
 
 Goal:

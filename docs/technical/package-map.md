@@ -22,6 +22,12 @@ Last updated: 2026-06-25
 | `MacWorkspaceDemo` | macOS | First consumer of `MacWorkspaceShell`. |
 | `IOSWorkspaceDemo` | iOS | First consumer of `IOSWorkspaceShell`. |
 
+## Example Packages
+
+| Package | Purpose |
+| --- | --- |
+| `Examples/CustomRendererClient` | Standalone consumer that uses `WorkspaceCore`, `WorkspaceTCA`, and `WorkspacePersistence` without importing bundled platform shells. |
+
 ## Dependency Constraints
 
 - Optional adapters must not leak into core products.
