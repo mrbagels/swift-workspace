@@ -33,6 +33,9 @@ VERIFY_BUILD_IOS=1 scripts/verify.sh
 Use the iOS build option after changes to `IOSWorkspaceShell`, the iOS demo, the
 iOS starter app, or shared APIs consumed by iOS-only SwiftUI code. Plain
 `swift test` runs on macOS and does not compile the `#if os(iOS)` renderer body.
+The iOS app targets use explicit Info.plist files with `UILaunchScreen` and
+universal iPhone/iPad device-family settings so current iPhones do not launch in
+compatibility scaling.
 
 Set `VERIFY_RUN_UI_TESTS=1` to run the UI smoke tests after the app builds:
 
@@ -42,7 +45,10 @@ VERIFY_BUILD_IOS=1 VERIFY_RUN_UI_TESTS=1 scripts/verify.sh
 ```
 
 The iOS UI smoke test uses `VERIFY_IOS_TEST_DESTINATION`, defaulting to
-`platform=iOS Simulator,name=iPhone 17 Pro`.
+the first available simulator whose name matches or starts with
+`VERIFY_IOS_TEST_DEVICE`, which defaults to `iPhone 17 Pro`. The script passes
+the resolved simulator UUID to `xcodebuild` so runtimes named like
+`iPhone 17 Pro (26.5)` still work.
 
 ## Example Checks
 

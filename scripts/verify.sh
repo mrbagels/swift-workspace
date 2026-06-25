@@ -7,7 +7,8 @@ PROJECT_ROOT=$(cd "$SCRIPT_DIR/.." && pwd)
 
 MAC_DESTINATION=${VERIFY_MAC_DESTINATION:-platform=macOS,arch=arm64}
 IOS_DESTINATION=${VERIFY_IOS_DESTINATION:-generic/platform=iOS Simulator}
-IOS_TEST_DESTINATION=${VERIFY_IOS_TEST_DESTINATION:-platform=iOS Simulator,name=iPhone 17 Pro}
+IOS_TEST_DESTINATION=${VERIFY_IOS_TEST_DESTINATION:-}
+IOS_TEST_DEVICE_NAME=${VERIFY_IOS_TEST_DEVICE:-iPhone 17 Pro}
 DERIVED_DATA=${VERIFY_DERIVED_DATA:-/tmp/swift-workspace-derived-data}
 BUILD_IOS=${VERIFY_BUILD_IOS:-0}
 RUN_UI_TESTS=${VERIFY_RUN_UI_TESTS:-0}
@@ -29,9 +30,48 @@ run_step() {
   "$@"
 }
 
+default_ios_test_destination() {
+  local requested_name="$1"
+
+  python3 - "$requested_name" <<'PY'
+import json
+import subprocess
+import sys
+
+requested_name = sys.argv[1]
+data = json.loads(
+    subprocess.check_output(
+        ["xcrun", "simctl", "list", "devices", "available", "--json"],
+        text=True,
+    )
+)
+
+matches = []
+for runtime_devices in data.get("devices", {}).values():
+    for device in runtime_devices:
+        name = device.get("name", "")
+        udid = device.get("udid")
+        if udid and (name == requested_name or name.startswith(f"{requested_name} ")):
+            matches.append(device)
+
+booted = [device for device in matches if device.get("state") == "Booted"]
+selected = (booted or matches)[0] if matches else None
+if selected:
+    print(f"platform=iOS Simulator,id={selected['udid']}")
+else:
+    print(f"platform=iOS Simulator,name={requested_name}")
+PY
+}
+
 require_command swift
 require_command xcodebuild
 require_command xcodegen
+require_command xcrun
+require_command python3
+
+if [[ -z "$IOS_TEST_DESTINATION" ]]; then
+  IOS_TEST_DESTINATION=$(default_ios_test_destination "$IOS_TEST_DEVICE_NAME")
+fi
 
 run_step "Run swift-workspace doctor" \
   "$PROJECT_ROOT/scripts/doctor.sh"

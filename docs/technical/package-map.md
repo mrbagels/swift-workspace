@@ -26,6 +26,11 @@ Last updated: 2026-06-25
 | `MinimalMacWorkspaceApp` | macOS | Smallest starter target for Mac shell adoption. |
 | `MinimalIOSWorkspaceApp` | iOS | Smallest starter target for iOS shell adoption. |
 
+The iOS app targets keep explicit Info.plist files checked in so launch screen,
+scene manifest, orientation, indirect input, and universal iPhone/iPad device
+family metadata are reviewed as source instead of inferred from generated build
+settings.
+
 ## Example Packages
 
 | Package | Purpose |

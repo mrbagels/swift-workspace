@@ -64,9 +64,6 @@
       "ios-workspace-open-scene-\(identifierComponent(String(describing: routeID)))"
     }
 
-    static func sectionIdentifier(_ sectionID: WorkspaceRouteSectionID) -> String {
-      "ios-workspace-route-section-\(identifierComponent(sectionID))"
-    }
   }
 
   /// An iOS and iPadOS renderer for the platform-neutral workspace engine.
@@ -92,23 +89,7 @@
       shell
         .navigationTitle(configuration.title)
         .toolbar {
-          ToolbarItemGroup(placement: .primaryAction) {
-            Button {
-              store.send(.commandPaletteRequested)
-            } label: {
-              Label("Command Search", systemImage: "command")
-            }
-            .keyboardShortcut("k")
-            .accessibilityIdentifier("ios-workspace-command-search-button")
-
-            Button {
-              store.send(.recentCommandsCleared)
-            } label: {
-              Label("Clear Recent Commands", systemImage: "clock.arrow.circlepath")
-            }
-            .disabled(store.recentCommandIDs.isEmpty)
-            .accessibilityIdentifier("ios-workspace-clear-recent-commands-button")
-          }
+          commandToolbar
         }
         .accessibilityElement(children: .contain)
         .accessibilityLabel(configuration.title)
@@ -142,6 +123,27 @@
         compactStackShell
       } else {
         splitShell
+      }
+    }
+
+    @ToolbarContentBuilder
+    private var commandToolbar: some ToolbarContent {
+      ToolbarItemGroup(placement: .primaryAction) {
+        Button {
+          store.send(.commandPaletteRequested)
+        } label: {
+          Label("Command Search", systemImage: "command")
+        }
+        .keyboardShortcut("k")
+        .accessibilityIdentifier("ios-workspace-command-search-button")
+
+        Button {
+          store.send(.recentCommandsCleared)
+        } label: {
+          Label("Clear Recent Commands", systemImage: "clock.arrow.circlepath")
+        }
+        .disabled(store.recentCommandIDs.isEmpty)
+        .accessibilityIdentifier("ios-workspace-clear-recent-commands-button")
       }
     }
 
@@ -215,9 +217,6 @@
               }
             }
           }
-          .accessibilityIdentifier(
-            IOSWorkspaceAccessibility.sectionIdentifier(section.id)
-          )
         }
       }
       .navigationTitle(configuration.title)
@@ -231,6 +230,11 @@
     ) -> some View {
       content(route)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .toolbar {
+          if usesStackNavigation {
+            commandToolbar
+          }
+        }
         .accessibilityElement(children: .contain)
         .accessibilityLabel(route?.title ?? "Workspace Detail")
         .accessibilityIdentifier(
@@ -357,7 +361,6 @@
                 )
               }
             }
-            .accessibilityIdentifier("ios-workspace-command-search-results")
           }
         }
         .navigationTitle("Command Search")

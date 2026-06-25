@@ -15,7 +15,7 @@ final class IOSWorkspaceDemoUITests: XCTestCase {
         .waitForExistence(timeout: 10)
     )
     XCTAssertTrue(
-      app.descendants(matching: .any)["ios-workspace-route-inbox"]
+      app.staticTexts["Route ID: inbox"]
         .waitForExistence(timeout: 4)
     )
     XCTAssertTrue(
@@ -25,7 +25,7 @@ final class IOSWorkspaceDemoUITests: XCTestCase {
 
     app.buttons["ios-workspace-command-search-button"].tap()
 
-    let searchField = app.searchFields["ios-workspace-command-search-field"]
+    let searchField = app.textFields["ios-workspace-command-search-field"]
     XCTAssertTrue(searchField.waitForExistence(timeout: 4))
     searchField.tap()
     searchField.typeText("settings")
