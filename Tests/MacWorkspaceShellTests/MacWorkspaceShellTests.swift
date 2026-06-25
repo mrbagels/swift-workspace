@@ -21,15 +21,19 @@
       isInspectorPresented: true,
       columnWidths: MacWorkspaceColumnWidths(
         sidebar: 280,
+        list: 340,
         detail: -1,
         inspector: .infinity
       ),
+      density: .comfortable,
       style: .nativeSplitView
     )
 
     #expect(restoration.columnWidths.sidebar == 280)
+    #expect(restoration.columnWidths.list == 340)
     #expect(restoration.columnWidths.detail == nil)
     #expect(restoration.columnWidths.inspector == nil)
+    #expect(restoration.density == .comfortable)
     #expect(restoration.workspace.selectedRouteID == .settings)
 
     let data = try JSONEncoder().encode(restoration)
@@ -39,6 +43,22 @@
     )
 
     #expect(decoded == restoration)
+  }
+
+  @Test
+  func macLayoutClampsColumnWidthsUsingPrototypeMetrics() {
+    let layout = MacWorkspaceShellLayout.default
+    let widths = MacWorkspaceColumnWidths(
+      sidebar: 10,
+      list: 10_000,
+      detail: 800,
+      inspector: 100
+    )
+
+    #expect(layout.resolvedWidth(for: .sidebar, columnWidths: widths) == layout.sidebarMinimumWidth)
+    #expect(layout.resolvedWidth(for: .list, columnWidths: widths) == layout.listMaximumWidth)
+    #expect(layout.resolvedWidth(for: .detail, columnWidths: widths) == 800)
+    #expect(layout.resolvedWidth(for: .inspector, columnWidths: widths) == layout.inspectorMinimumWidth)
   }
 
   @Test
