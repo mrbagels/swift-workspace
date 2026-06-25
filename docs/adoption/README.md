@@ -5,12 +5,9 @@ This folder holds durable consumer guides for each adoption path.
 Available guides:
 
 - [Mac shell quickstart](mac-shell.md)
+- [iOS shell quickstart](ios-shell.md)
+- [Engine-only quickstart](engine-only.md)
 - [Custom renderer quickstart](custom-renderer.md)
 - [Persistence adapter guide](persistence.md)
-
-Planned guides:
-
-- iOS shell quickstart
-- Engine-only quickstart
-- Prototype migration guide
-- CloudKit adoption guide
+- [CloudKit adoption guide](cloudkit.md)
+- [Prototype migration guide](prototype-migration.md)

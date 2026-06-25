@@ -13,6 +13,9 @@ source of truth for new architecture.
 5. `docs/features/server-side-companion.md`
 6. `docs/technical/package-map.md`
 7. `docs/operations/verification.md`
+8. `docs/adoption/README.md`
+9. `docs/operations/api-review-checklist.md`
+10. `docs/operations/release-checklist.md`
 
 ## Current Intent
 
@@ -36,3 +39,5 @@ or wholesale. The same engine must support:
 - If a type touches SQLiteData, CloudKit, or server APIs, it belongs in an
   optional adapter product.
 - If a decision is stable, document it in a durable folder, not scratchpad.
+- If a consumer asks how to adopt the package, start in `docs/adoption/`.
+- If a release or public API change is requested, use the operations checklists.

@@ -30,6 +30,9 @@ Acceptance:
 
 ## Phase 1: Stabilize WorkspaceCore
 
+Status: complete for the first stable engine vocabulary. Continue API review
+before public tags.
+
 Goal:
 
 Lock down the platform-neutral engine vocabulary before investing in renderers.
@@ -68,6 +71,9 @@ Progress:
 
 ## Phase 2: Make WorkspaceTCA Boring
 
+Status: complete for the current shared reducer surface. Continue adding tests
+when new delegate paths or effects appear.
+
 Goal:
 
 Make the reducer durable enough that platform shells can be thin renderers.
@@ -102,6 +108,9 @@ Progress:
   restoration, and metadata-driven fallback.
 
 ## Phase 3: Port Proven Mac Shell Behavior
+
+Status: complete for the first professional Mac renderer baseline. Manual demo
+review remains required before public release.
 
 Goal:
 
@@ -145,8 +154,14 @@ Progress:
   commands in the Mac demo.
 - Added `MacWorkspaceShellTests` for restoration, configuration, and command
   reference grouping.
+- Added stable Mac accessibility identifiers and command-palette focus hardening.
+- Added deterministic visual-state fixtures for native split-view and custom Mac
+  renderer states.
 
 ## Phase 4: Build The iOS And iPadOS Renderer
+
+Status: complete for the first adaptive iOS and iPadOS renderer baseline. Manual
+device or simulator review remains required before public release.
 
 Goal:
 
@@ -182,8 +197,16 @@ Progress:
 - Updated the iOS demo to use the same singleton settings scene metadata as the
   Mac demo.
 - Added `IOSWorkspaceShellTests` for restoration and configuration defaults.
+- Added stable iOS accessibility identifiers and command-search focus hardening.
+- Added deterministic visual-state fixtures for compact and split renderer
+  states.
+- Added `VERIFY_BUILD_IOS=1 scripts/verify.sh` coverage for compiling the iOS
+  demo and iOS-only SwiftUI renderer.
 
 ## Phase 5: Persistence And iCloud Primary Storage
+
+Status: complete for persistence helpers and CloudKit contracts. Live CloudKit
+sync remains app-owned and decision-gated by consuming app requirements.
 
 Goal:
 
@@ -219,8 +242,12 @@ Progress:
 - Added an async `WorkspaceCloudKitSyncAdapter` protocol for app-owned live
   CloudKit implementations.
 - Added CloudKit contract tests for Codable envelopes and conflict policy.
+- Added CloudKit adoption docs that keep iCloud primary and app-owned.
 
 ## Phase 6: Companion Server
+
+Status: decision-gated. Do not add `WorkspaceServerClient` until a consuming app
+proves the first server-backed workflow.
 
 Goal:
 
@@ -244,7 +271,24 @@ Acceptance:
 - Apps can run without the companion server unless they use server-specific
   capabilities.
 
+Progress:
+
+- Defined server scope, anti-scope, initial API areas, and the implementation
+  gate in `docs/features/server-side-companion.md`.
+- Kept server behavior outside `WorkspaceCore`, `WorkspaceTCA`, and platform
+  shells.
+
+Blocked Until:
+
+- First concrete server-backed workflow.
+- Authentication and entitlement model.
+- Request and response payloads.
+- Offline, retry, cancellation, privacy, and retention requirements.
+
 ## Phase 7: Distribution And Adoption
+
+Status: in progress. Adoption docs and local release checklists are in place;
+public release work still needs versioning and repository decisions.
 
 Goal:
 
@@ -274,10 +318,22 @@ Progress:
   `swift-workspace` by path.
 - Demonstrated route snapshots, command sections, route metadata patches, and
   file restoration without importing either platform shell.
-- Added adoption docs for custom renderers and persistence adapters.
+- Added adoption docs for Mac shell, iOS shell, engine-only, custom renderer,
+  persistence, CloudKit, and prototype migration paths.
+- Added API review and release checklists.
 - Added custom-renderer example tests to `scripts/verify.sh`.
 
+Remaining:
+
+- Add DocC catalogs for public products.
+- Add minimal starter apps when the preferred starter shape is chosen.
+- Add CI after the target runner image and Xcode version are chosen.
+- Tag a semantic version after manual demo review.
+
 ## Phase 8: Professional Polish
+
+Status: in progress. Automation anchors and visual-state fixtures are in place;
+manual design and interaction review remains.
 
 Goal:
 
@@ -300,12 +356,19 @@ Acceptance:
 - API boundaries are defensible.
 - Docs, tests, and examples agree with behavior.
 
-## Immediate Next Moves
+## Current Remaining Work
 
-1. Run full verification after each migration slice.
-2. Expand the Mac renderer with inspector and route-window handoff.
-3. Add command menu generation helpers on top of `WorkspaceCommandSections`.
-4. Build the adaptive iOS and iPadOS renderer.
-5. Add persistence stores beyond UserDefaults.
-6. Add a custom-renderer example that imports only `WorkspaceCore` and
-   `WorkspaceTCA`.
+Autonomous:
+
+- Add DocC catalogs for package products.
+- Add a CI workflow once the expected Xcode runner is known.
+- Add more reducer and renderer fixtures when new public behavior is introduced.
+- Keep docs and package map synchronized with source changes.
+
+Manual Or Decision-Gated:
+
+- Choose the first real companion-server workflow before adding a server client.
+- Choose package version, public repository URL, and release timing before
+  tagging.
+- Choose minimal starter app shape before adding starter app templates.
+- Run hands-on Mac and iOS demo review before public release.

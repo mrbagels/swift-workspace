@@ -28,6 +28,18 @@ Set `VERIFY_BUILD_IOS=1` to also build the iOS demo:
 VERIFY_BUILD_IOS=1 scripts/verify.sh
 ```
 
+Use the iOS build option after changes to `IOSWorkspaceShell`, the iOS demo, or
+shared APIs consumed by iOS-only SwiftUI code. Plain `swift test` runs on macOS
+and does not compile the `#if os(iOS)` renderer body.
+
+## Example Checks
+
+```sh
+swift test --package-path Examples/CustomRendererClient
+```
+
+The full verification script runs this example check.
+
 ## Generated Output
 
 The following are generated or local-only:

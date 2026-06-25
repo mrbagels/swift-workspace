@@ -35,6 +35,16 @@ distribution model are built intentionally.
 - `docs/operations`: verification and release workflows.
 - `docs/scratchpad`: temporary investigations and working notes.
 
+## Adoption Guides
+
+- [Mac shell quickstart](docs/adoption/mac-shell.md)
+- [iOS shell quickstart](docs/adoption/ios-shell.md)
+- [Engine-only quickstart](docs/adoption/engine-only.md)
+- [Custom renderer quickstart](docs/adoption/custom-renderer.md)
+- [Persistence adapter guide](docs/adoption/persistence.md)
+- [CloudKit adoption guide](docs/adoption/cloudkit.md)
+- [Prototype migration guide](docs/adoption/prototype-migration.md)
+
 ## Verify
 
 ```sh
@@ -52,4 +62,10 @@ Generate the Xcode project:
 
 ```sh
 xcodegen generate --spec project.yml
+```
+
+Build both demo apps:
+
+```sh
+VERIFY_BUILD_IOS=1 scripts/verify.sh
 ```

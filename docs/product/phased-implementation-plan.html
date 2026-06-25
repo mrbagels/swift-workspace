@@ -88,42 +88,47 @@
 
     <section class="phase">
       <h2>Phase 1: Stabilize WorkspaceCore</h2>
-      <p>In progress: command roles and grouping, route metadata patches, URL route parsing, Codable storage-safe models, and expanded core tests are in place.</p>
+      <p>Complete for the first stable engine vocabulary: command roles and grouping, route metadata patches, URL route parsing, Codable storage-safe models, and expanded core tests are in place. Continue API review before public tags.</p>
     </section>
 
     <section class="phase">
       <h2>Phase 2: Make WorkspaceTCA Boring</h2>
-      <p>In progress: reducer tests now cover palette lifecycle, recents, policy, route-open behavior, scene delegates, restoration, and metadata reconciliation.</p>
+      <p>Complete for the current shared reducer surface: reducer tests cover palette lifecycle, recents, policy, route-open behavior, scene delegates, restoration, and metadata reconciliation.</p>
     </section>
 
     <section class="phase">
       <h2>Phase 3: Port Proven Mac Shell Behavior</h2>
-      <p>In progress: Mac shell configuration, native split rendering, command palette UI, command reference UI, command-menu entry points, and Mac-specific restoration are in place.</p>
+      <p>Complete for the first professional Mac renderer baseline: Mac shell configuration, native split rendering, command palette UI, command reference UI, command-menu entry points, Mac-specific restoration, accessibility identifiers, focus hardening, and visual-state fixtures are in place.</p>
     </section>
 
     <section class="phase">
       <h2>Phase 4: Build The iOS And iPadOS Renderer</h2>
-      <p>In progress: iOS shell configuration, restoration, command-search sheet, badge preferences, scene-aware route actions, and demo adoption are in place.</p>
+      <p>Complete for the first adaptive iOS and iPadOS renderer baseline: iOS shell configuration, restoration, command-search sheet, badge preferences, scene-aware route actions, demo adoption, accessibility identifiers, focus hardening, and compact/split visual-state fixtures are in place.</p>
     </section>
 
     <section class="phase">
       <h2>Phase 5: Persistence And iCloud Primary Storage</h2>
-      <p>In progress: file-backed restoration storage, CloudKit record names, zones, conflict policy, restoration envelopes, route metadata envelopes, and adapter contracts are in place.</p>
+      <p>Complete for persistence helpers and CloudKit contracts: file-backed restoration storage, CloudKit record names, zones, conflict policy, restoration envelopes, route metadata envelopes, adapter contracts, tests, and adoption docs are in place. Live CloudKit sync remains app-owned.</p>
     </section>
 
     <section class="phase">
       <h2>Phase 6: Companion Server</h2>
-      <p>Add optional server capabilities for entitlements, templates, jobs, diagnostics, and integrations without replacing iCloud.</p>
+      <p>Decision-gated: server scope, anti-scope, initial API areas, and implementation gates are documented. Do not add <code>WorkspaceServerClient</code> until a consuming app proves the first server-backed workflow.</p>
     </section>
 
     <section class="phase">
       <h2>Phase 7: Distribution And Adoption</h2>
-      <p>In progress: a compiled custom-renderer client example, adoption docs, and verification coverage for the example package are in place.</p>
+      <p>In progress: a compiled custom-renderer client example, adoption docs for every current adoption path, API review checklist, release checklist, and verification coverage for the example package are in place. Public release work still needs versioning and repository decisions.</p>
     </section>
 
     <section class="phase">
       <h2>Phase 8: Professional Polish</h2>
-      <p>Run design, accessibility, performance, API, and demo polish passes.</p>
+      <p>In progress: automation anchors and visual-state fixtures are in place. Manual design, interaction, and demo review remain before public release.</p>
+    </section>
+
+    <section class="phase">
+      <h2>Current Remaining Work</h2>
+      <p>Autonomous work: DocC catalogs, CI workflow once the runner is known, and fixture expansion as public behavior grows. Decision-gated work: first server workflow, package version and public repository URL, starter app shape, and hands-on Mac/iOS demo review.</p>
     </section>
 
     <details>

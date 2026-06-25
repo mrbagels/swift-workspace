@@ -29,6 +29,18 @@
     {
       "path": "docs/operations/verification.md",
       "description": "Local verification, XcodeGen, package tests, and demo builds."
+    },
+    {
+      "path": "docs/adoption/README.md",
+      "description": "Consumer adoption guide index for Mac, iOS, engine-only, custom renderer, persistence, CloudKit, and prototype migration paths."
+    },
+    {
+      "path": "docs/operations/api-review-checklist.md",
+      "description": "Public API, package boundary, adapter, renderer, and documentation review checklist."
+    },
+    {
+      "path": "docs/operations/release-checklist.md",
+      "description": "Semantic versioning, release verification, manual review, tagging, and post-release checklist."
     }
   ],
   "sourceOfTruth": [

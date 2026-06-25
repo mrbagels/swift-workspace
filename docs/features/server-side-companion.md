@@ -67,3 +67,19 @@ WorkspaceServerClient
 
 These are placeholders for product planning. They should not be implemented
 until an app workflow proves the need.
+
+## Implementation Gate
+
+No server client should be added until a consuming app identifies:
+
+- the first concrete workflow,
+- the authentication model,
+- the entitlement source of truth,
+- the request and response payloads,
+- offline behavior,
+- retry and cancellation behavior,
+- privacy and retention requirements.
+
+Until those decisions exist, the correct implementation is documentation,
+command delegates, and app-owned effects. `WorkspaceCore`, `WorkspaceTCA`, and
+platform shells must continue to work without a companion server.

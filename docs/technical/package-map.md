@@ -78,7 +78,9 @@ Last updated: 2026-06-25
 - command-search sheet backed by `WorkspaceFeature`,
 - hardware keyboard shortcut display in command results,
 - scene-aware context actions for routes that prefer separate scenes,
-- iOS-specific restoration for column preference and compact navigation path.
+- iOS-specific restoration for column preference and compact navigation path,
+- stable accessibility identifiers for shell automation,
+- deterministic visual-state fixtures for compact and split renderer states.
 
 `WorkspacePersistence` currently provides:
 
@@ -93,3 +95,18 @@ Last updated: 2026-06-25
 - stable record-name helpers for restoration, route metadata, and scenes,
 - Codable restoration and route-metadata envelopes,
 - async adapter protocol for app-owned live CloudKit implementations.
+
+## Adoption And Distribution Docs
+
+Consumer-facing adoption docs now cover:
+
+- Mac shell adoption,
+- iOS shell adoption,
+- engine-only adoption,
+- custom renderer adoption,
+- persistence adapters,
+- CloudKit contracts,
+- prototype migration.
+
+Operations docs now cover API review and release checklists. Live server-client
+distribution remains decision-gated until an app workflow proves a server API.
