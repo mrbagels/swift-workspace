@@ -18,10 +18,11 @@ scripts/verify.sh
 The full script:
 
 1. runs the doctor,
-2. runs package tests,
-3. generates the Xcode project,
-4. builds the macOS demo,
-5. builds the minimal macOS starter app.
+2. runs documentation checks,
+3. runs package tests,
+4. generates the Xcode project,
+5. builds the macOS demo,
+6. builds the minimal macOS starter app.
 
 Set `VERIFY_BUILD_IOS=1` to also build the iOS demo and minimal iOS starter app:
 
@@ -45,8 +46,18 @@ The full verification script runs this example check.
 
 DocC catalogs are checked into each public product target. This local SwiftPM
 toolchain does not currently expose `swift package generate-documentation`, so
-DocC generation is not part of `scripts/verify.sh` yet. Add it once the package
-uses a toolchain or plugin that supports documentation generation in CI.
+DocC generation is not part of `scripts/verify.sh` yet. `scripts/check-docs.sh`
+validates the LLM manifest, durable entrypoint files, DocC landing pages, and
+public documentation copy rules. Add full DocC generation once the package uses a
+toolchain or plugin that supports documentation generation in CI.
+
+## Continuous Integration
+
+The repository workflow lives at `.github/workflows/swift-workspace.yml`. It runs
+on GitHub's `macos-26` runner, installs XcodeGen when needed, and executes
+`scripts/verify.sh` from the `swift-workspace` folder. The iOS demo and starter
+builds are available through the manual `workflow_dispatch` input named
+`build_ios`.
 
 ## Generated Output
 

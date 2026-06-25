@@ -287,9 +287,9 @@ Blocked Until:
 
 ## Phase 7: Distribution And Adoption
 
-Status: in progress. Adoption docs and local release checklists are in place;
-DocC catalogs are scaffolded; public release work still needs versioning and
-repository decisions.
+Status: in progress. Adoption docs, local release checklists, DocC catalogs,
+documentation checks, and CI automation are in place; public release work still
+needs versioning and repository decisions.
 
 Goal:
 
@@ -325,10 +325,11 @@ Progress:
 - Added DocC landing-page catalogs for every public package product.
 - Added minimal Mac and iOS starter app targets under `Examples/`.
 - Added custom-renderer example tests to `scripts/verify.sh`.
+- Added documentation checks and a GitHub Actions workflow for package tests,
+  docs, XcodeGen, the Mac demo, and the minimal Mac starter.
 
 Remaining:
 
-- Add CI after the target runner image and Xcode version are chosen.
 - Tag a semantic version after manual demo review.
 
 ## Phase 8: Professional Polish
@@ -361,7 +362,6 @@ Acceptance:
 
 Autonomous:
 
-- Add a CI workflow once the expected Xcode runner is known.
 - Add more reducer and renderer fixtures when new public behavior is introduced.
 - Keep docs and package map synchronized with source changes.
 

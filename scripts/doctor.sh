@@ -64,6 +64,7 @@ print_version() {
 }
 
 require_command git
+require_command python3
 require_command swift
 require_command xcodebuild
 require_command xcodegen
@@ -88,6 +89,7 @@ require_path "Apps/IOSWorkspaceDemo"
 require_path "Examples/CustomRendererClient/Package.swift"
 require_path "Examples/MinimalMacWorkspaceApp/MinimalMacWorkspaceApp.swift"
 require_path "Examples/MinimalIOSWorkspaceApp/MinimalIOSWorkspaceApp.swift"
+require_path "scripts/check-docs.sh"
 require_path "docs/llm/START_HERE.md"
 require_path "docs/llm/manifest.json"
 require_path "docs/architecture/workspace-engine-split.md"

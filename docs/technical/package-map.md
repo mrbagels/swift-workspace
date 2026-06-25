@@ -112,6 +112,8 @@ Consumer-facing adoption docs now cover:
 
 Operations docs now cover API review and release checklists. Live server-client
 distribution remains decision-gated until an app workflow proves a server API.
+CI runs from `.github/workflows/swift-workspace.yml` and uses
+`scripts/verify.sh` as its source of truth.
 
 DocC landing pages are scaffolded in each public product target:
 

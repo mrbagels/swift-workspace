@@ -68,6 +68,7 @@ Use `VERIFY_BUILD_IOS=1 scripts/verify.sh` to build both iOS app targets.
 
 ```sh
 scripts/doctor.sh
+scripts/check-docs.sh
 scripts/verify.sh
 ```
 
@@ -88,3 +89,7 @@ Build both demo apps:
 ```sh
 VERIFY_BUILD_IOS=1 scripts/verify.sh
 ```
+
+GitHub Actions runs the macOS verification path from
+`.github/workflows/swift-workspace.yml`. Use the manual workflow input
+`build_ios` when the iOS demo and starter targets should be built in CI.

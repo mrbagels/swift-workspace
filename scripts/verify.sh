@@ -34,6 +34,9 @@ require_command xcodegen
 run_step "Run swift-workspace doctor" \
   "$PROJECT_ROOT/scripts/doctor.sh"
 
+run_step "Run documentation checks" \
+  "$PROJECT_ROOT/scripts/check-docs.sh"
+
 run_step "Run package tests" \
   swift test --package-path "$PROJECT_ROOT"
 
