@@ -169,6 +169,20 @@ Acceptance:
 - The iOS shell feels native rather than copied from Mac.
 - Custom iOS clients can bypass the shell and still use the engine.
 
+Progress:
+
+- Added `IOSWorkspaceShellConfiguration` for title, navigation style, command
+  search placeholder, and badge display preferences.
+- Added `IOSWorkspaceRestoration` to compose iOS column and compact navigation
+  state around shared `WorkspaceRestoration`.
+- Added a configurable iOS shell renderer backed by `WorkspaceFeature`.
+- Added a compact command-search sheet that uses shared command filtering,
+  selection, recents, and command execution.
+- Added scene-aware route context actions for iPadOS window handoff.
+- Updated the iOS demo to use the same singleton settings scene metadata as the
+  Mac demo.
+- Added `IOSWorkspaceShellTests` for restoration and configuration defaults.
+
 ## Phase 5: Persistence And iCloud Primary Storage
 
 Goal:

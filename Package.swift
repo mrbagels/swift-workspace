@@ -112,6 +112,12 @@ let package = Package(
       ]
     ),
     .testTarget(
+      name: "IOSWorkspaceShellTests",
+      dependencies: [
+        "IOSWorkspaceShell",
+      ]
+    ),
+    .testTarget(
       name: "WorkspacePersistenceTests",
       dependencies: [
         "WorkspacePersistence",

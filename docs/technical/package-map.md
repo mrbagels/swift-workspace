@@ -54,3 +54,19 @@ Last updated: 2026-06-25
 - restoration loading,
 - navigation registry replacement,
 - route metadata patch reconciliation.
+
+`MacWorkspaceShell` currently provides:
+
+- configurable native split-view rendering,
+- toolbar and command-menu entry points,
+- command palette UI backed by `WorkspaceFeature`,
+- command reference UI backed by `WorkspaceCommandSections`,
+- Mac-specific restoration for chrome and split widths.
+
+`IOSWorkspaceShell` currently provides:
+
+- configurable iOS and iPadOS split rendering,
+- command-search sheet backed by `WorkspaceFeature`,
+- hardware keyboard shortcut display in command results,
+- scene-aware context actions for routes that prefer separate scenes,
+- iOS-specific restoration for column preference and compact navigation path.

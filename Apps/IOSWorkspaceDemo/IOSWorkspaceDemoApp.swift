@@ -10,6 +10,11 @@ enum DemoRoute: String, CaseIterable, Codable, Hashable, Sendable {
 }
 
 enum DemoNavigation {
+  static let iosConfiguration = IOSWorkspaceShellConfiguration(
+    title: "Workspace Demo",
+    commandSearchPlaceholder: "Search demo commands"
+  )
+
   static let registry = WorkspaceNavigationRegistry(
     sections: [
       WorkspaceRouteSection(
@@ -52,7 +57,8 @@ enum DemoNavigation {
             systemImage: "gearshape",
             keywords: ["preferences"],
             shortcut: .command(","),
-            presentation: .fullWidth
+            presentation: .fullWidth,
+            scenePresentation: .singleton(id: "settings", title: "Settings")
           ),
         ]
       ),
@@ -82,7 +88,10 @@ struct IOSWorkspaceDemoApp: App {
 
   var body: some Scene {
     WindowGroup {
-      IOSWorkspaceShellView(store: store) { route in
+      IOSWorkspaceShellView(
+        store: store,
+        configuration: DemoNavigation.iosConfiguration
+      ) { route in
         DemoRouteView(route: route)
       }
     }
