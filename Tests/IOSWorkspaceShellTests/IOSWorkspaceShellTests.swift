@@ -41,3 +41,17 @@ func iosShellConfigurationHasNativeDefaults() {
   #expect(configuration.commandSearchPlaceholder == "Search commands and routes")
   #expect(configuration.prefersBadges)
 }
+
+@Test
+func iosNavigationStyleResolvesAdaptiveStackBehavior() {
+  #expect(IOSWorkspaceNavigationStyle.automatic.usesStackNavigation(isCompactWidth: true))
+  #expect(!IOSWorkspaceNavigationStyle.automatic.usesStackNavigation(isCompactWidth: false))
+  #expect(IOSWorkspaceNavigationStyle.stack.usesStackNavigation(isCompactWidth: false))
+  #expect(!IOSWorkspaceNavigationStyle.split.usesStackNavigation(isCompactWidth: true))
+
+  let stackConfiguration = IOSWorkspaceShellConfiguration(navigationStyle: .stack)
+  let splitConfiguration = IOSWorkspaceShellConfiguration(navigationStyle: .split)
+
+  #expect(stackConfiguration.usesStackNavigation(isCompactWidth: false))
+  #expect(!splitConfiguration.usesStackNavigation(isCompactWidth: true))
+}

@@ -5,6 +5,17 @@ public enum IOSWorkspaceNavigationStyle: String, CaseIterable, Codable, Equatabl
   case automatic
   case split
   case stack
+
+  public func usesStackNavigation(isCompactWidth: Bool) -> Bool {
+    switch self {
+    case .automatic:
+      isCompactWidth
+    case .split:
+      false
+    case .stack:
+      true
+    }
+  }
 }
 
 /// iOS and iPadOS renderer configuration.
@@ -27,4 +38,8 @@ public struct IOSWorkspaceShellConfiguration: Codable, Equatable, Sendable {
   }
 
   public static let `default` = Self()
+
+  public func usesStackNavigation(isCompactWidth: Bool) -> Bool {
+    navigationStyle.usesStackNavigation(isCompactWidth: isCompactWidth)
+  }
 }

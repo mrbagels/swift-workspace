@@ -7,6 +7,8 @@
   /// An iOS and iPadOS renderer for the platform-neutral workspace engine.
   public struct IOSWorkspaceShellView<RouteID: Hashable & Sendable, Content: View>: View {
     @Bindable public var store: StoreOf<WorkspaceFeature<RouteID>>
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @State private var compactNavigationPath: [RouteID] = []
 
     private let configuration: IOSWorkspaceShellConfiguration
     private let content: (WorkspaceRouteDescriptor<RouteID>?) -> Content
@@ -53,39 +55,75 @@
             }
           )
         ) {
-          IOSWorkspaceCommandSearchView(
-            store: store,
-            configuration: configuration
-          )
-          .presentationDetents([.medium, .large])
-        }
+        IOSWorkspaceCommandSearchView(
+          store: store,
+          configuration: configuration
+        )
+        .presentationDetents([.medium, .large])
+      }
+      .onChange(of: store.selectedRouteID) { _, selectedRouteID in
+        syncCompactPath(with: selectedRouteID)
+      }
     }
 
     @ViewBuilder
     private var shell: some View {
-      let splitView = NavigationSplitView {
-        sidebar
-      } detail: {
-        detail
-      }
-
-      switch configuration.navigationStyle {
-      case .automatic:
-        splitView.navigationSplitViewStyle(.automatic)
-      case .split:
-        splitView.navigationSplitViewStyle(.balanced)
-      case .stack:
-        splitView.navigationSplitViewStyle(.prominentDetail)
+      if usesStackNavigation {
+        compactStackShell
+      } else {
+        splitShell
       }
     }
 
-    private var sidebar: some View {
+    @ViewBuilder
+    private var splitShell: some View {
+      switch configuration.navigationStyle {
+      case .automatic:
+        NavigationSplitView {
+          routeList
+        } detail: {
+          detail(for: store.selectedRoute)
+        }
+        .navigationSplitViewStyle(.automatic)
+      case .split:
+        NavigationSplitView {
+          routeList
+        } detail: {
+          detail(for: store.selectedRoute)
+        }
+        .navigationSplitViewStyle(.balanced)
+      case .stack:
+        NavigationSplitView {
+          routeList
+        } detail: {
+          detail(for: store.selectedRoute)
+        }
+        .navigationSplitViewStyle(.prominentDetail)
+      }
+    }
+
+    private var compactStackShell: some View {
+      NavigationStack(path: $compactNavigationPath) {
+        routeList
+          .navigationTitle(configuration.title)
+          .navigationDestination(for: RouteID.self) { routeID in
+            let route = visibleRoute(for: routeID)
+            detail(for: route)
+              .navigationTitle(route?.title ?? configuration.title)
+          }
+      }
+      .onAppear {
+        syncCompactPath(with: store.selectedRouteID)
+      }
+    }
+
+    private var routeList: some View {
       List {
         ForEach(store.visibleSections) { section in
           Section(section.title) {
             ForEach(section.routes) { route in
               Button {
-                store.send(.routeSelected(route.id))
+                select(route)
               } label: {
                 IOSWorkspaceRouteRow(
                   route: route,
@@ -108,9 +146,35 @@
       .navigationTitle(configuration.title)
     }
 
-    private var detail: some View {
-      content(store.selectedRoute)
+    private func detail(
+      for route: WorkspaceRouteDescriptor<RouteID>?
+    ) -> some View {
+      content(route)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    private var usesStackNavigation: Bool {
+      configuration.usesStackNavigation(isCompactWidth: horizontalSizeClass == .compact)
+    }
+
+    private func select(_ route: WorkspaceRouteDescriptor<RouteID>) {
+      store.send(.routeSelected(route.id))
+      guard usesStackNavigation else { return }
+      compactNavigationPath = [route.id]
+    }
+
+    private func syncCompactPath(with routeID: RouteID) {
+      guard usesStackNavigation else { return }
+      if compactNavigationPath.last != routeID {
+        compactNavigationPath = [routeID]
+      }
+    }
+
+    private func visibleRoute(for routeID: RouteID) -> WorkspaceRouteDescriptor<RouteID>? {
+      store.visibleSections
+        .lazy
+        .flatMap(\.routes)
+        .first { $0.id == routeID }
     }
   }
 
