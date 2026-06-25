@@ -65,9 +65,12 @@ Last updated: 2026-06-25
 
 - configurable native split-view rendering,
 - toolbar and command-menu entry points,
+- `MacWorkspaceCommands` for native menu generation from
+  `WorkspaceCommandSections`,
 - command palette UI backed by `WorkspaceFeature`,
 - command reference UI backed by `WorkspaceCommandSections`,
-- Mac-specific restoration for chrome and split widths.
+- Mac-specific restoration for chrome and split widths,
+- demo-proven typed route scene handoff through `WorkspaceSceneValue`.
 
 `IOSWorkspaceShell` currently provides:
 

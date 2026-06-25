@@ -96,4 +96,13 @@
     #expect(configuration.sidebarIdealWidth < configuration.sidebarMaximumWidth)
     #expect(configuration.commandPaletteWidth >= 520)
   }
+
+  @Test
+  func macCommandMenuConfigurationDefaultsMatchPrototypeBehavior() {
+    let configuration = MacWorkspaceCommandMenuConfiguration.default
+
+    #expect(configuration.includesDisabledCommands)
+    #expect(configuration.includesPaletteCommand)
+    #expect(configuration.grouping == .category)
+  }
 #endif
