@@ -1,0 +1,47 @@
+MacWorkspaceShellVisualState
+style: custom
+density: comfortable
+brand: Workspace Demo (indigo)
+sidebar: hidden
+inspector: visible
+selected: settings
+selected-presentation: fullWidth
+selected-scene: singleton
+widths: sidebar=300 list=360 detail=640 inspector=340
+palette: width=560 top=88 results=380 placeholder="Search demo commands"
+panes:
+- header
+- full-width
+- inspector
+sections:
+- Workspace [collapsed]
+- System [expanded]
+  - settings "Settings" selected enabled badge=none shortcut=Cmd+, presentation=fullWidth scene=singleton
+command-sections:
+- Workspace
+  - route:inbox "Inbox" enabled role=navigation source=navigation shortcut=Cmd+1
+  - route:review "Review" disabled role=navigation source=navigation shortcut=Cmd+2
+- System
+  - route:settings "Settings" enabled role=navigation source=navigation shortcut=Cmd+,
+  - scene:settings "Open Settings in New Window" enabled role=scene source=navigation shortcut=none
+- App
+  - app:refresh-workspace "Refresh Workspace" enabled role=appAction source=app shortcut=Cmd+R
+- Toolbar
+  - toolbar:export-workspace "Export" enabled role=toolbarAction source=toolbar shortcut=Cmd+E
+- Primary
+  - primary:new-item "New Item" enabled role=primaryAction source=primaryAction shortcut=Cmd+N
+accessibility:
+- mac-workspace-shell
+- mac-workspace-shell-custom
+- mac-workspace-sidebar
+- mac-workspace-sidebar-routes
+- mac-workspace-command-search-button
+- mac-workspace-content-header
+- mac-workspace-content-title
+- mac-workspace-sidebar-toggle-button
+- mac-workspace-route-settings
+- mac-workspace-inspector-pane
+- mac-workspace-inspector-toggle-button
+- mac-workspace-command-palette
+- mac-workspace-command-palette-search-field
+- mac-workspace-command-palette-results

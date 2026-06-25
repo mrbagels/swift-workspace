@@ -5,6 +5,50 @@
   import WorkspaceCore
   import WorkspaceTCA
 
+  private enum MacWorkspaceCommandPaletteFocusField: Hashable {
+    case search
+  }
+
+  private enum MacWorkspaceAccessibility {
+    static func identifierComponent(_ value: Any) -> String {
+      var identifier = ""
+      var previousWasSeparator = false
+
+      for scalar in String(describing: value).lowercased().unicodeScalars {
+        if CharacterSet.alphanumerics.contains(scalar) {
+          identifier.unicodeScalars.append(scalar)
+          previousWasSeparator = false
+        } else if !previousWasSeparator {
+          identifier.append("-")
+          previousWasSeparator = true
+        }
+      }
+
+      let trimmed = identifier.trimmingCharacters(in: CharacterSet(charactersIn: "-"))
+      return trimmed.isEmpty ? "unknown" : trimmed
+    }
+
+    static func commandIdentifier<RouteID: Hashable & Sendable>(
+      _ id: WorkspaceCommandIdentifier<RouteID>
+    ) -> String {
+      "mac-workspace-command-\(identifierComponent(id))"
+    }
+
+    static func commandPaletteRowIdentifier<RouteID: Hashable & Sendable>(
+      _ id: WorkspaceCommandIdentifier<RouteID>
+    ) -> String {
+      "mac-workspace-command-palette-row-\(identifierComponent(id))"
+    }
+
+    static func routeIdentifier<RouteID>(_ id: RouteID) -> String {
+      "mac-workspace-route-\(identifierComponent(id))"
+    }
+
+    static func sceneButtonIdentifier<RouteID>(_ id: RouteID) -> String {
+      "mac-workspace-open-scene-\(identifierComponent(id))"
+    }
+  }
+
   /// Reusable macOS workspace shell view for TCA-backed applications.
   public struct MacWorkspaceShellView<
     RouteID: Hashable & Sendable,
@@ -96,6 +140,7 @@
         .id(style)
       )
       .macWorkspaceDensity(density)
+      .accessibilityIdentifier("mac-workspace-shell")
     }
 
     /// The default preferred size for host windows that render the shell.
@@ -169,6 +214,7 @@
         idealHeight: max(configuration.layout.minimumWindowHeight, Self.preferredWindowSize.height)
       )
       .background(configuration.theme.canvas.ignoresSafeArea())
+      .accessibilityIdentifier("mac-workspace-shell-custom")
     }
 
     private var nativeSplitShell: some View {
@@ -201,6 +247,7 @@
       )
       .background(Color(nsColor: .windowBackgroundColor).ignoresSafeArea())
       .ignoresSafeArea(.container, edges: .top)
+      .accessibilityIdentifier("mac-workspace-shell-native")
     }
 
     private func nativeSidebar(width: CGFloat) -> some View {
@@ -559,6 +606,8 @@
           .padding(.vertical, 10)
           .frame(maxWidth: .infinity, alignment: .leading)
         }
+        .accessibilityLabel("Workspace Routes")
+        .accessibilityIdentifier("mac-workspace-sidebar-routes")
 
         if reservesFooterSpace {
           footer()
@@ -567,6 +616,7 @@
         }
       }
       .background(theme.canvas)
+      .accessibilityIdentifier("mac-workspace-sidebar")
       .onAppear { syncFullScreenState() }
       .onReceive(NotificationCenter.default.publisher(for: NSWindow.didEnterFullScreenNotification)) { _ in
         withAnimation(fullScreenAnimation) { isFullScreen = true }
@@ -613,6 +663,7 @@
         .macWorkspaceKeyboardShortcut(.commandPalette)
         .accessibilityLabel("Open Command Palette")
         .accessibilityHint("Search commands and routes")
+        .accessibilityIdentifier("mac-workspace-command-search-button")
         .padding(.horizontal, 12)
         .padding(.top, layout.contentTopOffset - 8)
       }
@@ -648,6 +699,7 @@
         .frame(maxWidth: .infinity, alignment: isFullScreen ? .leading : .trailing)
         .accessibilityElement(children: .combine)
         .accessibilityLabel(brand.title)
+        .accessibilityIdentifier("mac-workspace-brand")
       }
       .frame(height: layout.headerHeight)
     }
@@ -734,6 +786,7 @@
         isEnabled: isEnabled,
         isSelected: isSelected,
         disabledReason: disabledReason,
+        accessibilityIdentifier: MacWorkspaceAccessibility.routeIdentifier(route.id),
         theme: theme,
         tint: tint
       ) {
@@ -770,6 +823,9 @@
         .buttonStyle(.plain)
         .accessibilityLabel("\(isExpanded ? "Collapse" : "Expand") \(section.title)")
         .accessibilityValue(isExpanded ? "Expanded" : "Collapsed")
+        .accessibilityIdentifier(
+          "mac-workspace-sidebar-section-\(MacWorkspaceAccessibility.identifierComponent(section.id))"
+        )
         .help(isExpanded ? "Collapse \(section.title)" : "Expand \(section.title)")
       } else {
         Text(section.title.uppercased())
@@ -778,6 +834,9 @@
           .lineLimit(1)
           .padding(.horizontal, 8)
           .accessibilityLabel(section.title)
+          .accessibilityIdentifier(
+            "mac-workspace-sidebar-section-\(MacWorkspaceAccessibility.identifierComponent(section.id))"
+          )
       }
     }
 
@@ -788,6 +847,7 @@
         Button("Open in New Window") {
           onOpenScene(route.id)
         }
+        .accessibilityIdentifier(MacWorkspaceAccessibility.sceneButtonIdentifier(route.id))
       }
     }
 
@@ -810,6 +870,7 @@
     let isProminent: Bool
     let isSelected: Bool
     let onTap: () -> Void
+    let accessibilityIdentifier: String
     let shortcutLabel: String?
     let subtitle: String?
     let systemImage: String
@@ -827,6 +888,7 @@
       isEnabled: Bool = true,
       isSelected: Bool = false,
       disabledReason: String? = nil,
+      accessibilityIdentifier: String,
       theme: MacWorkspaceShellTheme,
       tint: MacWorkspaceTint,
       onTap: @escaping () -> Void
@@ -837,6 +899,7 @@
       self.isProminent = isProminent
       self.isSelected = isSelected
       self.onTap = onTap
+      self.accessibilityIdentifier = accessibilityIdentifier
       self.shortcutLabel = shortcutLabel
       self.subtitle = subtitle
       self.systemImage = systemImage
@@ -885,6 +948,7 @@
       .help(disabledReason ?? title)
       .accessibilityLabel(title)
       .accessibilityValue(accessibilityValue)
+      .accessibilityIdentifier(accessibilityIdentifier)
       .macWorkspaceSelectedAccessibility(isSelected)
     }
 
@@ -1003,6 +1067,7 @@
         }
       }
       .background(theme.canvas)
+      .accessibilityIdentifier("mac-workspace-content-region")
     }
 
     private var showsInspector: Bool {
@@ -1029,6 +1094,9 @@
             .frame(width: mainWidth)
             .frame(maxHeight: .infinity)
             .background(contentSurface)
+            .accessibilityElement(children: .contain)
+            .accessibilityLabel("Detail")
+            .accessibilityIdentifier("mac-workspace-detail-pane")
         } else {
           switch route.presentation {
           case .listDetail:
@@ -1039,6 +1107,9 @@
               .frame(width: mainWidth)
               .frame(maxHeight: .infinity)
               .background(contentSurface)
+              .accessibilityElement(children: .contain)
+              .accessibilityLabel(route.title)
+              .accessibilityIdentifier("mac-workspace-full-width-pane")
           }
         }
 
@@ -1079,6 +1150,9 @@
           .frame(maxHeight: .infinity)
           .background(contentSurface)
           .clipped()
+          .accessibilityElement(children: .contain)
+          .accessibilityLabel("\(route.title) List")
+          .accessibilityIdentifier("mac-workspace-list-pane")
 
         MacWorkspaceResizeDivider(
           column: .list,
@@ -1097,6 +1171,9 @@
           .background(contentSurface)
           .clipped()
           .layoutPriority(1)
+          .accessibilityElement(children: .contain)
+          .accessibilityLabel("\(route.title) Detail")
+          .accessibilityIdentifier("mac-workspace-detail-pane")
       }
     }
 
@@ -1110,6 +1187,7 @@
         .background(theme.canvas)
         .accessibilityElement(children: .contain)
         .accessibilityLabel("Inspector")
+        .accessibilityIdentifier("mac-workspace-inspector-pane")
     }
 
     private var inspectorAnimation: Animation? {
@@ -1181,6 +1259,9 @@
       .padding(.horizontal, isNativeStyle ? 24 : 10)
       .frame(height: layout.headerHeight)
       .background(theme.canvas)
+      .accessibilityElement(children: .contain)
+      .accessibilityLabel(store.selectedRoute?.title ?? "Workspace")
+      .accessibilityIdentifier("mac-workspace-content-header")
     }
 
     private var sidebarHiddenLeadingReservation: CGFloat {
@@ -1205,6 +1286,7 @@
         )
       )
       .accessibilityHint("Toggles the left navigation column")
+      .accessibilityIdentifier("mac-workspace-sidebar-toggle-button")
     }
 
     private var titleBlock: some View {
@@ -1229,6 +1311,10 @@
             .lineLimit(1)
         }
       }
+      .accessibilityElement(children: .combine)
+      .accessibilityLabel(store.selectedRoute?.title ?? "Workspace")
+      .accessibilityValue(titleAccessibilityValue)
+      .accessibilityIdentifier("mac-workspace-content-title")
     }
 
     private var controls: some View {
@@ -1253,6 +1339,7 @@
           .macWorkspaceKeyboardShortcut(command.shortcut)
           .accessibilityLabel(command.title)
           .accessibilityValue(command.disabledReason ?? "")
+          .accessibilityIdentifier(MacWorkspaceAccessibility.commandIdentifier(command.id))
         }
 
         if !visibleToolbarCommands.isEmpty && visiblePrimaryCommand != nil {
@@ -1278,6 +1365,7 @@
           .macWorkspaceKeyboardShortcut(primaryCommand.shortcut)
           .accessibilityLabel(primaryCommand.title)
           .accessibilityValue(primaryCommand.disabledReason ?? "")
+          .accessibilityIdentifier(MacWorkspaceAccessibility.commandIdentifier(primaryCommand.id))
         }
       }
     }
@@ -1292,6 +1380,16 @@
         isInspectorPresented.toggle()
       }
       .accessibilityHint("Toggles the right inspector panel")
+      .accessibilityIdentifier("mac-workspace-inspector-toggle-button")
+    }
+
+    private var titleAccessibilityValue: String {
+      [
+        store.selectedRoute?.subtitle,
+        store.selectedRoute?.badge.map { "\($0)" },
+      ]
+      .compactMap { $0 }
+      .joined(separator: ", ")
     }
 
     private var visibleToolbarCommands: [WorkspaceCommand<RouteID>] {
@@ -1310,7 +1408,7 @@
   private struct MacWorkspaceCommandPalette<RouteID: Hashable & Sendable>: View {
     @Bindable var store: StoreOf<WorkspaceFeature<RouteID>>
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @FocusState private var isSearchFocused: Bool
+    @FocusState private var focusedField: MacWorkspaceCommandPaletteFocusField?
     @State private var focusTask: Task<Void, Never>?
 
     let behavior: MacWorkspaceShellBehavior
@@ -1343,12 +1441,19 @@
         .frame(maxHeight: .infinity, alignment: .top)
         .accessibilityElement(children: .contain)
         .accessibilityLabel("Command Palette")
+        .accessibilityIdentifier("mac-workspace-command-palette")
       }
       .onAppear {
         focusSearchField()
       }
+      .onChange(of: store.isCommandPalettePresented) { _, isPresented in
+        if isPresented {
+          focusSearchField()
+        }
+      }
       .onDisappear {
         focusTask?.cancel()
+        focusedField = nil
       }
       .onExitCommand {
         store.send(.commandPaletteDismissed)
@@ -1368,11 +1473,11 @@
     private func focusSearchField() {
       focusTask?.cancel()
       focusTask = Task { @MainActor in
-        isSearchFocused = false
+        focusedField = nil
         await Task.yield()
         try? await Task.sleep(for: .milliseconds(80))
         guard !Task.isCancelled else { return }
-        isSearchFocused = true
+        focusedField = .search
       }
     }
 
@@ -1390,10 +1495,14 @@
         )
         .textFieldStyle(.plain)
         .font(.system(size: 16))
-        .focused($isSearchFocused)
+        .focused($focusedField, equals: .search)
+        .defaultFocus($focusedField, .search)
         .onSubmit {
           store.send(.commandPaletteReturnKeyPressed)
         }
+        .accessibilityLabel("Command Search")
+        .accessibilityHint("Type a route, action, shortcut, or keyword")
+        .accessibilityIdentifier("mac-workspace-command-palette-search-field")
 
         if !store.commandPaletteQuery.isEmpty {
           Button {
@@ -1404,6 +1513,8 @@
           .buttonStyle(.plain)
           .foregroundStyle(theme.mutedText)
           .help("Clear Search")
+          .accessibilityLabel("Clear Search")
+          .accessibilityIdentifier("mac-workspace-command-palette-clear-search-button")
         }
       }
       .padding(16)
@@ -1419,6 +1530,7 @@
           theme: theme
         )
         .frame(height: 180)
+        .accessibilityIdentifier("mac-workspace-command-palette-empty-state")
       } else {
         ScrollViewReader { proxy in
           ScrollView(.vertical, showsIndicators: false) {
@@ -1442,6 +1554,8 @@
             .padding(8)
           }
           .frame(maxHeight: behavior.commandPaletteResultsMaximumHeight)
+          .accessibilityLabel("Command Results")
+          .accessibilityIdentifier("mac-workspace-command-palette-results")
           .onChange(of: store.selectedCommandID) { _, newID in
             guard let newID else { return }
             if reduceMotion {
@@ -1520,7 +1634,8 @@
       }
       .accessibilityLabel(command.title)
       .accessibilityValue(accessibilityValue)
-      .accessibilityHint("Runs command")
+      .accessibilityHint(command.isEnabled ? "Runs command" : command.disabledReason ?? "Command unavailable")
+      .accessibilityIdentifier(MacWorkspaceAccessibility.commandPaletteRowIdentifier(command.id))
       .macWorkspaceSelectedAccessibility(isSelected)
     }
 

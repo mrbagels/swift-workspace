@@ -109,6 +109,9 @@ let package = Package(
       name: "MacWorkspaceShellTests",
       dependencies: [
         "MacWorkspaceShell",
+      ],
+      resources: [
+        .process("__Snapshots__"),
       ]
     ),
     .testTarget(
