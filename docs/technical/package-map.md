@@ -63,6 +63,11 @@ Last updated: 2026-06-25
 - navigation registry replacement,
 - route metadata patch reconciliation.
 
+Large-registry tests cover route command search, command reference grouping, and
+metadata patch application across thousands of routes. Metadata patches are
+indexed by route before application so patch handling scales with changed routes
+and route count instead of repeatedly scanning every patch for every route.
+
 `MacWorkspaceShell` currently provides:
 
 - configurable native split-view rendering,

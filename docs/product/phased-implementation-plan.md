@@ -68,6 +68,8 @@ Progress:
   navigation, scene request, and route-open request values.
 - Expanded core tests for command grouping, unavailable command filtering,
   metadata application, scene identity, and deep-link parsing.
+- Added large-registry coverage for command search, command reference grouping,
+  and metadata patch application.
 
 ## Phase 2: Make WorkspaceTCA Boring
 

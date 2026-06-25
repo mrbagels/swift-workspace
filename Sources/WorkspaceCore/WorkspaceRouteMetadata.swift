@@ -104,11 +104,20 @@ extension WorkspaceRouteSection {
   public mutating func apply(
     _ patches: [WorkspaceRouteMetadataPatch<RouteID>]
   ) -> Bool {
+    apply(patchesByRouteID: Dictionary(grouping: patches, by: \.routeID))
+  }
+
+  @discardableResult
+  mutating func apply(
+    patchesByRouteID: [RouteID: [WorkspaceRouteMetadataPatch<RouteID>]]
+  ) -> Bool {
     var changed = false
-    for patch in patches {
-      guard let index = routes.firstIndex(where: { $0.id == patch.routeID })
+    for index in routes.indices {
+      guard let routePatches = patchesByRouteID[routes[index].id]
       else { continue }
-      changed = routes[index].apply(patch) || changed
+      for patch in routePatches {
+        changed = routes[index].apply(patch) || changed
+      }
     }
     return changed
   }
@@ -127,9 +136,10 @@ extension WorkspaceNavigationRegistry {
   public mutating func apply(
     _ patches: [WorkspaceRouteMetadataPatch<RouteID>]
   ) -> Bool {
+    let patchesByRouteID = Dictionary(grouping: patches, by: \.routeID)
     var changed = false
     for index in sections.indices {
-      changed = sections[index].apply(patches) || changed
+      changed = sections[index].apply(patchesByRouteID: patchesByRouteID) || changed
     }
     return changed
   }
