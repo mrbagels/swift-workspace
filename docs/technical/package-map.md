@@ -21,6 +21,8 @@ Last updated: 2026-06-25
 | --- | --- | --- |
 | `MacWorkspaceDemo` | macOS | First consumer of `MacWorkspaceShell`. |
 | `IOSWorkspaceDemo` | iOS | First consumer of `IOSWorkspaceShell`. |
+| `MinimalMacWorkspaceApp` | macOS | Smallest starter target for Mac shell adoption. |
+| `MinimalIOSWorkspaceApp` | iOS | Smallest starter target for iOS shell adoption. |
 
 ## Example Packages
 
@@ -121,3 +123,15 @@ DocC landing pages are scaffolded in each public product target:
 - `Sources/WorkspaceCloudKit/WorkspaceCloudKit.docc`
 - `Sources/MacWorkspaceShell/MacWorkspaceShell.docc`
 - `Sources/IOSWorkspaceShell/IOSWorkspaceShell.docc`
+
+## Starter Apps
+
+The minimal starter app targets live under `Examples/` but are built by the
+generated Xcode project rather than SwiftPM:
+
+- `Examples/MinimalMacWorkspaceApp`
+- `Examples/MinimalIOSWorkspaceApp`
+
+They intentionally contain only route definitions, a small registry, a
+`WorkspaceFeature` store, and the platform shell view. They are templates for
+consumer wiring, not full demos.

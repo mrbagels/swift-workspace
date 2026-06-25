@@ -323,11 +323,11 @@ Progress:
   persistence, CloudKit, and prototype migration paths.
 - Added API review and release checklists.
 - Added DocC landing-page catalogs for every public package product.
+- Added minimal Mac and iOS starter app targets under `Examples/`.
 - Added custom-renderer example tests to `scripts/verify.sh`.
 
 Remaining:
 
-- Add minimal starter apps when the preferred starter shape is chosen.
 - Add CI after the target runner image and Xcode version are chosen.
 - Tag a semantic version after manual demo review.
 
@@ -370,5 +370,4 @@ Manual Or Decision-Gated:
 - Choose the first real companion-server workflow before adding a server client.
 - Choose package version, public repository URL, and release timing before
   tagging.
-- Choose minimal starter app shape before adding starter app templates.
 - Run hands-on Mac and iOS demo review before public release.

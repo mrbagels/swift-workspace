@@ -20,17 +20,18 @@ The full script:
 1. runs the doctor,
 2. runs package tests,
 3. generates the Xcode project,
-4. builds the macOS demo.
+4. builds the macOS demo,
+5. builds the minimal macOS starter app.
 
-Set `VERIFY_BUILD_IOS=1` to also build the iOS demo:
+Set `VERIFY_BUILD_IOS=1` to also build the iOS demo and minimal iOS starter app:
 
 ```sh
 VERIFY_BUILD_IOS=1 scripts/verify.sh
 ```
 
-Use the iOS build option after changes to `IOSWorkspaceShell`, the iOS demo, or
-shared APIs consumed by iOS-only SwiftUI code. Plain `swift test` runs on macOS
-and does not compile the `#if os(iOS)` renderer body.
+Use the iOS build option after changes to `IOSWorkspaceShell`, the iOS demo, the
+iOS starter app, or shared APIs consumed by iOS-only SwiftUI code. Plain
+`swift test` runs on macOS and does not compile the `#if os(iOS)` renderer body.
 
 ## Example Checks
 

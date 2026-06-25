@@ -11,3 +11,8 @@ Available guides:
 - [Persistence adapter guide](persistence.md)
 - [CloudKit adoption guide](cloudkit.md)
 - [Prototype migration guide](prototype-migration.md)
+
+Starter app targets:
+
+- `Examples/MinimalMacWorkspaceApp`
+- `Examples/MinimalIOSWorkspaceApp`

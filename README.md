@@ -27,6 +27,8 @@ distribution model are built intentionally.
 - `Tests/`: package tests.
 - `Apps/MacWorkspaceDemo`: macOS demo app.
 - `Apps/IOSWorkspaceDemo`: iOS demo app.
+- `Examples/MinimalMacWorkspaceApp`: smallest macOS starter app target.
+- `Examples/MinimalIOSWorkspaceApp`: smallest iOS starter app target.
 - `docs/llm`: AI entrypoints, routing manifest, and conventions.
 - `docs/architecture`: durable architecture decisions.
 - `docs/product`: phased product and implementation plans.
@@ -44,6 +46,23 @@ distribution model are built intentionally.
 - [Persistence adapter guide](docs/adoption/persistence.md)
 - [CloudKit adoption guide](docs/adoption/cloudkit.md)
 - [Prototype migration guide](docs/adoption/prototype-migration.md)
+
+## Starter Apps
+
+The generated Xcode project includes minimal starter app schemes:
+
+```sh
+xcodegen generate --spec project.yml
+xcodebuild \
+  -project SwiftWorkspace.xcodeproj \
+  -scheme MinimalMacWorkspaceApp \
+  -configuration Debug \
+  -destination 'platform=macOS,arch=arm64' \
+  CODE_SIGNING_ALLOWED=NO \
+  build
+```
+
+Use `VERIFY_BUILD_IOS=1 scripts/verify.sh` to build both iOS app targets.
 
 ## Verify
 

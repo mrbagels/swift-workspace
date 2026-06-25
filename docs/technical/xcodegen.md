@@ -27,6 +27,8 @@ This keeps the generated project aligned with SwiftPM distribution.
 
 - `MacWorkspaceDemo`
 - `IOSWorkspaceDemo`
+- `MinimalMacWorkspaceApp`
+- `MinimalIOSWorkspaceApp`
 
 Package tests should be run with SwiftPM:
 

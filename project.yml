@@ -70,6 +70,44 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.kylebegeman.swiftworkspace.ios-demo
         PRODUCT_NAME: Workspace Demo
 
+  MinimalMacWorkspaceApp:
+    type: application
+    platform: macOS
+    deploymentTarget: "26.0"
+    sources:
+      - path: Examples/MinimalMacWorkspaceApp
+    dependencies:
+      - package: SwiftWorkspace
+        product: MacWorkspaceShell
+      - package: SwiftWorkspace
+        product: WorkspaceEngine
+    settings:
+      base:
+        CODE_SIGN_STYLE: Automatic
+        GENERATE_INFOPLIST_FILE: YES
+        PRODUCT_BUNDLE_IDENTIFIER: com.kylebegeman.swiftworkspace.minimal-mac
+        PRODUCT_NAME: Minimal Workspace
+
+  MinimalIOSWorkspaceApp:
+    type: application
+    platform: iOS
+    deploymentTarget: "26.0"
+    sources:
+      - path: Examples/MinimalIOSWorkspaceApp
+    dependencies:
+      - package: SwiftWorkspace
+        product: IOSWorkspaceShell
+      - package: SwiftWorkspace
+        product: WorkspaceEngine
+    settings:
+      base:
+        CODE_SIGN_STYLE: Automatic
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
+        INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: YES
+        PRODUCT_BUNDLE_IDENTIFIER: com.kylebegeman.swiftworkspace.minimal-ios
+        PRODUCT_NAME: Minimal Workspace
+
 schemes:
   MacWorkspaceDemo:
     build:
@@ -86,6 +124,28 @@ schemes:
     build:
       targets:
         IOSWorkspaceDemo: all
+    run:
+      config: Debug
+    test:
+      config: Debug
+      gatherCoverageData: true
+      targets: []
+
+  MinimalMacWorkspaceApp:
+    build:
+      targets:
+        MinimalMacWorkspaceApp: all
+    run:
+      config: Debug
+    test:
+      config: Debug
+      gatherCoverageData: true
+      targets: []
+
+  MinimalIOSWorkspaceApp:
+    build:
+      targets:
+        MinimalIOSWorkspaceApp: all
     run:
       config: Debug
     test:

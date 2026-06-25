@@ -55,6 +55,18 @@ run_step "Build MacWorkspaceDemo" \
     CODE_SIGNING_ALLOWED=NO \
     build
 
+run_step "Build MinimalMacWorkspaceApp" \
+  xcodebuild \
+    -project "$PROJECT_ROOT/SwiftWorkspace.xcodeproj" \
+    -scheme MinimalMacWorkspaceApp \
+    -configuration Debug \
+    -destination "$MAC_DESTINATION" \
+    -derivedDataPath "$DERIVED_DATA/minimal-mac" \
+    -skipMacroValidation \
+    -skipPackagePluginValidation \
+    CODE_SIGNING_ALLOWED=NO \
+    build
+
 if [[ "$BUILD_IOS" == "1" ]]; then
   run_step "Build IOSWorkspaceDemo" \
     xcodebuild \
@@ -63,6 +75,18 @@ if [[ "$BUILD_IOS" == "1" ]]; then
       -configuration Debug \
       -destination "$IOS_DESTINATION" \
       -derivedDataPath "$DERIVED_DATA/ios" \
+      -skipMacroValidation \
+      -skipPackagePluginValidation \
+      CODE_SIGNING_ALLOWED=NO \
+      build
+
+  run_step "Build MinimalIOSWorkspaceApp" \
+    xcodebuild \
+      -project "$PROJECT_ROOT/SwiftWorkspace.xcodeproj" \
+      -scheme MinimalIOSWorkspaceApp \
+      -configuration Debug \
+      -destination "$IOS_DESTINATION" \
+      -derivedDataPath "$DERIVED_DATA/minimal-ios" \
       -skipMacroValidation \
       -skipPackagePluginValidation \
       CODE_SIGNING_ALLOWED=NO \
