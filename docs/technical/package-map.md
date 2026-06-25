@@ -77,8 +77,8 @@ and route count instead of repeatedly scanning every patch for every route.
 
 `MacWorkspaceShell` currently provides:
 
-- custom shell rendering by default,
-- configurable native split-view rendering as an opt-in style,
+- custom-only shell rendering,
+- floating and edge-to-edge custom sidebar presentations,
 - toolbar and command-menu entry points,
 - `MacWorkspaceCommands` for native menu generation from
   `WorkspaceCommandSections`,

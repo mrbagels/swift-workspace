@@ -3,6 +3,7 @@ style: custom
 density: comfortable
 brand: Workspace Demo (indigo)
 sidebar: hidden
+sidebar-presentation: floating
 inspector: visible
 selected: settings
 selected-presentation: fullWidth
@@ -34,6 +35,7 @@ accessibility:
 - mac-workspace-shell
 - mac-workspace-shell-custom
 - mac-workspace-sidebar
+- mac-workspace-sidebar-panel
 - mac-workspace-sidebar-routes
 - mac-workspace-command-search-button
 - mac-workspace-content-header

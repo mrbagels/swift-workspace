@@ -133,8 +133,8 @@
 
     public var body: some View {
       ZStack {
-        workspaceColumns
-          .ignoresSafeArea(.container, edges: .top)
+        shellContent
+          .id(style)
           .transaction { transaction in
             transaction.animation = nil
           }
@@ -153,8 +153,10 @@
       }
       .background(
         MacWorkspaceTitlebarConfigurator(
-          layout: configuration.layout
+          layout: configuration.layout,
+          style: style
         )
+        .id(style)
       )
       .macWorkspaceDensity(density)
       .accessibilityIdentifier("mac-workspace-shell")
@@ -163,6 +165,23 @@
     /// The default preferred size for host windows that render the shell.
     public static var preferredWindowSize: CGSize {
       MacWorkspaceShellLayout.default.preferredWindowSize
+    }
+
+    private var style: MacWorkspaceShellStyle {
+      configuration.style.resolved
+    }
+
+    @ViewBuilder
+    private var shellContent: some View {
+      switch style {
+      case .automatic:
+        nativeSplitShell
+      case .custom:
+        workspaceColumns
+          .ignoresSafeArea(.container, edges: .top)
+      case .nativeSplitView:
+        nativeSplitShell
+      }
     }
 
     private var workspaceColumns: some View {
@@ -175,7 +194,6 @@
               brand: configuration.brand,
               footer: sidebarFooterContent,
               layout: configuration.layout,
-              presentation: configuration.sidebarPresentation,
               searchPlaceholder: configuration.searchPlaceholder,
               theme: configuration.theme
             )
@@ -196,7 +214,10 @@
             }
           }
 
-          contentRegion(width: metrics.contentWidth)
+          contentRegion(
+            width: metrics.contentWidth,
+            isNativeStyle: false
+          )
           .frame(width: metrics.contentWidth)
           .frame(maxHeight: .infinity)
           .clipped()
@@ -215,7 +236,69 @@
       .accessibilityIdentifier("mac-workspace-shell-custom")
     }
 
-    private func contentRegion(width: CGFloat) -> some View {
+    private var nativeSplitShell: some View {
+      GeometryReader { geometry in
+        let metrics = nativeMetrics(for: geometry.size)
+        HStack(spacing: 0) {
+          if isSidebarVisible {
+            nativeSidebar(width: metrics.sidebarOuterWidth)
+              .frame(width: metrics.sidebarOuterWidth)
+              .transition(sidebarTransition)
+          }
+
+          contentRegion(
+            width: metrics.contentWidth,
+            isNativeStyle: true
+          )
+          .frame(width: metrics.contentWidth)
+          .frame(maxHeight: .infinity)
+          .clipped()
+          .layoutPriority(1)
+        }
+        .animation(shellAnimation, value: isSidebarVisible)
+        .frame(width: metrics.width, height: metrics.height, alignment: .leading)
+      }
+      .frame(
+        minWidth: minimumWindowWidth,
+        idealWidth: max(minimumWindowWidth, Self.preferredWindowSize.width),
+        minHeight: configuration.layout.minimumWindowHeight,
+        idealHeight: max(configuration.layout.minimumWindowHeight, Self.preferredWindowSize.height)
+      )
+      .background(Color(nsColor: .windowBackgroundColor).ignoresSafeArea())
+      .ignoresSafeArea(.container, edges: .top)
+      .accessibilityIdentifier("mac-workspace-shell-native")
+    }
+
+    private func nativeSidebar(width outerWidth: CGFloat) -> some View {
+      let horizontalInsets = NativeMetrics.sidebarHorizontalFootprint
+      let contentWidth = max(0, outerWidth - horizontalInsets)
+
+      return MacWorkspaceSidebar(
+        store: store,
+        brand: configuration.brand,
+        footer: sidebarFooterContent,
+        reservesFooterSpace: false,
+        layout: configuration.layout,
+        searchPlaceholder: configuration.searchPlaceholder,
+        theme: configuration.theme
+      )
+      .frame(width: contentWidth)
+      .frame(maxHeight: .infinity)
+      .background(.regularMaterial)
+      .clipShape(RoundedRectangle(cornerRadius: NativeMetrics.sidebarCornerRadius, style: .continuous))
+      .overlay {
+        RoundedRectangle(cornerRadius: NativeMetrics.sidebarCornerRadius, style: .continuous)
+          .stroke(configuration.theme.divider, lineWidth: 1)
+      }
+      .padding(.leading, NativeMetrics.sidebarLeadingInset)
+      .padding(.trailing, NativeMetrics.sidebarTrailingInset)
+      .padding(.vertical, NativeMetrics.sidebarVerticalInset)
+    }
+
+    private func contentRegion(
+      width: CGFloat,
+      isNativeStyle: Bool
+    ) -> some View {
       MacWorkspaceContentRegion(
         store: store,
         columnWidths: $columnWidths,
@@ -225,6 +308,7 @@
         headerTrailing: headerTrailingContent,
         inspector: inspectorContent,
         isInspectorPresented: $isInspectorPresented,
+        isNativeStyle: isNativeStyle,
         isSidebarVisible: $isSidebarVisible,
         layout: configuration.layout,
         list: listContent,
@@ -243,7 +327,7 @@
         : 0
       let sidebarWidth = layout.resolvedWidth(for: .sidebar, columnWidths: columnWidths)
       let sidebarFootprint = isSidebarVisible
-        ? sidebarWidth + layout.dividerWidth
+        ? sidebarWidth + (style == .nativeSplitView ? NativeMetrics.sidebarHorizontalFootprint : layout.dividerWidth)
         : 0
       return sidebarFootprint + layout.minimumContentWidth(for: columnWidths) + inspectorFootprint
     }
@@ -256,6 +340,32 @@
       let minimumContentWidth = layout.minimumContentWidth(for: columnWidths) + inspectorFootprint
       let sidebarColumnWidth = layout.resolvedWidth(for: .sidebar, columnWidths: columnWidths)
       let sidebarOuterWidth = isSidebarVisible ? sidebarColumnWidth + layout.dividerWidth : 0
+      let width = stableDimension(
+        max(size.width, sidebarOuterWidth + minimumContentWidth),
+        fallback: sidebarOuterWidth + minimumContentWidth
+      )
+      let height = stableDimension(size.height, fallback: layout.minimumWindowHeight)
+      let contentWidth = stableDimension(width - sidebarOuterWidth, fallback: minimumContentWidth)
+
+      return ShellMetrics(
+        contentWidth: contentWidth,
+        height: height,
+        sidebarColumnWidth: sidebarColumnWidth,
+        sidebarOuterWidth: sidebarOuterWidth,
+        width: width
+      )
+    }
+
+    private func nativeMetrics(for size: CGSize) -> ShellMetrics {
+      let layout = configuration.layout
+      let inspectorFootprint = hasInspector && isInspectorPresented
+        ? layout.resolvedWidth(for: .inspector, columnWidths: columnWidths) + layout.dividerWidth
+        : 0
+      let minimumContentWidth = layout.minimumContentWidth(for: columnWidths) + inspectorFootprint
+      let sidebarColumnWidth = layout.resolvedWidth(for: .sidebar, columnWidths: columnWidths)
+      let sidebarOuterWidth = isSidebarVisible
+        ? sidebarColumnWidth + NativeMetrics.sidebarHorizontalFootprint
+        : 0
       let width = stableDimension(
         max(size.width, sidebarOuterWidth + minimumContentWidth),
         fallback: sidebarOuterWidth + minimumContentWidth
@@ -370,40 +480,6 @@
   where
     ListContent == EmptyView,
     DetailContent == FullWidthContent,
-    InspectorContent == EmptyView
-  {
-    init(
-      store: StoreOf<WorkspaceFeature<RouteID>>,
-      configuration: MacWorkspaceShellConfiguration = .default,
-      restoration: MacWorkspaceRestoration<RouteID>? = nil,
-      @ViewBuilder headerLeading: @escaping (WorkspaceRouteDescriptor<RouteID>?) -> HeaderLeadingContent,
-      @ViewBuilder headerCenter: @escaping (WorkspaceRouteDescriptor<RouteID>?) -> HeaderCenterContent,
-      @ViewBuilder headerTrailing: @escaping (WorkspaceRouteDescriptor<RouteID>?) -> HeaderTrailingContent,
-      @ViewBuilder sidebarFooter: @escaping () -> SidebarFooterContent,
-      @ViewBuilder content: @escaping (WorkspaceRouteDescriptor<RouteID>?) -> DetailContent
-    ) {
-      self.init(
-        store: store,
-        configuration: configuration,
-        restoration: restoration,
-        headerLeading: headerLeading,
-        headerCenter: headerCenter,
-        headerTrailing: headerTrailing,
-        inspector: { _ in EmptyView() },
-        sidebarFooter: sidebarFooter,
-        list: { _ in EmptyView() },
-        detail: { route in content(route) },
-        fullWidth: { route in content(route) },
-        hasInspector: false,
-        prefersSinglePaneContent: true
-      )
-    }
-  }
-
-  public extension MacWorkspaceShellView
-  where
-    ListContent == EmptyView,
-    DetailContent == FullWidthContent,
     HeaderLeadingContent == EmptyView,
     HeaderCenterContent == EmptyView,
     HeaderTrailingContent == EmptyView,
@@ -423,8 +499,13 @@
         headerLeading: { _ in EmptyView() },
         headerCenter: { _ in EmptyView() },
         headerTrailing: { _ in EmptyView() },
+        inspector: { _ in EmptyView() },
         sidebarFooter: sidebarFooter,
-        content: content
+        list: { _ in EmptyView() },
+        detail: { route in content(route) },
+        fullWidth: { route in content(route) },
+        hasInspector: false,
+        prefersSinglePaneContent: true
       )
     }
   }
@@ -499,7 +580,6 @@
     let brand: MacWorkspaceBrand
     let footer: () -> FooterContent
     let layout: MacWorkspaceShellLayout
-    let presentation: MacWorkspaceSidebarPresentation
     let reservesFooterSpace: Bool
     let searchPlaceholder: String
     let theme: MacWorkspaceShellTheme
@@ -510,7 +590,6 @@
       @ViewBuilder footer: @escaping () -> FooterContent,
       reservesFooterSpace: Bool = true,
       layout: MacWorkspaceShellLayout,
-      presentation: MacWorkspaceSidebarPresentation,
       searchPlaceholder: String,
       theme: MacWorkspaceShellTheme
     ) {
@@ -518,7 +597,6 @@
       self.brand = brand
       self.footer = footer
       self.layout = layout
-      self.presentation = presentation
       self.reservesFooterSpace = reservesFooterSpace
       self.searchPlaceholder = searchPlaceholder
       self.theme = theme
@@ -526,29 +604,7 @@
 
     var body: some View {
       VStack(spacing: 0) {
-        titlebarRow
-
-        sidebarPanel
-          .padding(.top, sidebarPanelTopInset)
-          .padding(.leading, sidebarPanelHorizontalInset)
-          .padding(.trailing, sidebarPanelHorizontalInset)
-          .padding(.bottom, sidebarPanelBottomInset)
-      }
-      .background(theme.canvas)
-      .accessibilityIdentifier("mac-workspace-sidebar")
-      .onAppear { syncFullScreenState() }
-      .onReceive(NotificationCenter.default.publisher(for: NSWindow.didEnterFullScreenNotification)) { _ in
-        withAnimation(fullScreenAnimation) { isFullScreen = true }
-      }
-      .onReceive(NotificationCenter.default.publisher(for: NSWindow.didExitFullScreenNotification)) { _ in
-        withAnimation(fullScreenAnimation) { isFullScreen = false }
-      }
-    }
-
-    private var sidebarPanel: some View {
-      VStack(spacing: 0) {
-        searchButton
-          .padding(.top, sidebarSearchTopInset)
+        sidebarHeader
 
         ScrollView(.vertical, showsIndicators: false) {
           VStack(alignment: .leading, spacing: 18) {
@@ -568,8 +624,7 @@
               }
             }
           }
-          .padding(.leading, sidebarContentLeadingInset)
-          .padding(.trailing, sidebarContentTrailingInset)
+          .padding(.horizontal, 8)
           .padding(.vertical, 10)
           .frame(maxWidth: .infinity, alignment: .leading)
         }
@@ -578,63 +633,63 @@
 
         if reservesFooterSpace {
           footer()
-            .padding(.leading, sidebarContentLeadingInset)
-            .padding(.trailing, sidebarContentTrailingInset)
+            .padding(.horizontal, 12)
             .padding(.vertical, 10)
         }
       }
-      .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-      .background(
-        RoundedRectangle(cornerRadius: sidebarPanelCornerRadius, style: .continuous)
-          .fill(sidebarPanelBackground)
-      )
-      .overlay {
-        if presentation == .floating {
-          RoundedRectangle(cornerRadius: sidebarPanelCornerRadius, style: .continuous)
-            .stroke(theme.divider.opacity(0.75), lineWidth: 1)
-        }
+      .background(theme.canvas)
+      .accessibilityIdentifier("mac-workspace-sidebar")
+      .onAppear { syncFullScreenState() }
+      .onReceive(NotificationCenter.default.publisher(for: NSWindow.didEnterFullScreenNotification)) { _ in
+        withAnimation(fullScreenAnimation) { isFullScreen = true }
       }
-      .clipShape(RoundedRectangle(cornerRadius: sidebarPanelCornerRadius, style: .continuous))
-      .accessibilityIdentifier("mac-workspace-sidebar-panel")
+      .onReceive(NotificationCenter.default.publisher(for: NSWindow.didExitFullScreenNotification)) { _ in
+        withAnimation(fullScreenAnimation) { isFullScreen = false }
+      }
     }
 
-    private var searchButton: some View {
-      Button {
-        store.send(.commandPaletteRequested)
-      } label: {
-        HStack(spacing: 7) {
-          Image(systemName: "magnifyingglass")
-            .font(.system(size: 12, weight: .regular))
-            .foregroundStyle(theme.mutedText)
-          Text(searchPlaceholder)
-            .font(.system(size: 12))
-            .foregroundStyle(theme.mutedText)
-            .lineLimit(1)
-          Spacer(minLength: 0)
-          MacWorkspaceKeycap(WorkspaceKeyboardShortcut.commandPalette.displayLabel, theme: theme)
+    private var sidebarHeader: some View {
+      VStack(alignment: .leading, spacing: 0) {
+        titlebarRow
+
+        Button {
+          store.send(.commandPaletteRequested)
+        } label: {
+          HStack(spacing: 7) {
+            Image(systemName: "magnifyingglass")
+              .font(.system(size: 12, weight: .regular))
+              .foregroundStyle(theme.mutedText)
+            Text(searchPlaceholder)
+              .font(.system(size: 12))
+              .foregroundStyle(theme.mutedText)
+              .lineLimit(1)
+            Spacer(minLength: 0)
+            MacWorkspaceKeycap(WorkspaceKeyboardShortcut.commandPalette.displayLabel, theme: theme)
+          }
+          .padding(.horizontal, 9)
+          .padding(.vertical, 6)
+          .frame(maxWidth: .infinity)
+          .background(
+            RoundedRectangle(cornerRadius: 7, style: .continuous)
+              .fill(theme.fillRaised.opacity(isSearchHovered ? 1 : 0.78))
+              .overlay {
+                RoundedRectangle(cornerRadius: 7, style: .continuous)
+                  .stroke(theme.divider, lineWidth: 1)
+                  .opacity(isSearchHovered ? 0.9 : 0.5)
+              }
+          )
         }
-        .padding(.horizontal, 9)
-        .padding(.vertical, 6)
-        .frame(maxWidth: .infinity)
-        .background(
-          RoundedRectangle(cornerRadius: 7, style: .continuous)
-            .fill(theme.fillRaised.opacity(isSearchHovered ? 1 : 0.78))
-            .overlay {
-              RoundedRectangle(cornerRadius: 7, style: .continuous)
-                .stroke(theme.divider, lineWidth: 1)
-                .opacity(isSearchHovered ? 0.9 : 0.5)
-            }
-        )
+        .buttonStyle(.plain)
+        .onHover { isSearchHovered = $0 }
+        .animation(.easeOut(duration: 0.12), value: isSearchHovered)
+        .macWorkspaceKeyboardShortcut(.commandPalette)
+        .accessibilityLabel("Open Command Palette")
+        .accessibilityHint("Search commands and routes")
+        .accessibilityIdentifier("mac-workspace-command-search-button")
+        .padding(.horizontal, 12)
+        .padding(.top, layout.contentTopOffset - 8)
       }
-      .buttonStyle(.plain)
-      .onHover { isSearchHovered = $0 }
-      .animation(.easeOut(duration: 0.12), value: isSearchHovered)
-      .macWorkspaceKeyboardShortcut(.commandPalette)
-      .accessibilityLabel("Open Command Palette")
-      .accessibilityHint("Search commands and routes")
-      .accessibilityIdentifier("mac-workspace-command-search-button")
-      .padding(.leading, sidebarContentLeadingInset)
-      .padding(.trailing, sidebarContentTrailingInset)
+      .padding(.bottom, 6)
     }
 
     private var titlebarRow: some View {
@@ -684,58 +739,6 @@
 
     private var fullScreenAnimation: Animation? {
       reduceMotion ? nil : .easeOut(duration: 0.16)
-    }
-
-    private var sidebarPanelBackground: Color {
-      switch presentation {
-      case .edgeToEdge:
-        theme.canvas
-      case .floating:
-        theme.fill.opacity(0.62)
-      }
-    }
-
-    private var sidebarPanelBottomInset: CGFloat {
-      presentation == .floating ? 12 : 0
-    }
-
-    private var sidebarPanelCornerRadius: CGFloat {
-      presentation == .floating ? 14 : 0
-    }
-
-    private var sidebarPanelHorizontalInset: CGFloat {
-      presentation == .floating ? 12 : 0
-    }
-
-    private var sidebarPanelTopInset: CGFloat {
-      switch presentation {
-      case .edgeToEdge:
-        max(0, layout.contentTopOffset - 8)
-      case .floating:
-        max(10, layout.contentTopOffset - 24)
-      }
-    }
-
-    private var sidebarSearchTopInset: CGFloat {
-      presentation == .floating ? 10 : 0
-    }
-
-    private var sidebarContentLeadingInset: CGFloat {
-      switch presentation {
-      case .edgeToEdge:
-        max(24, layout.titlebarEdgePadding + 4)
-      case .floating:
-        12
-      }
-    }
-
-    private var sidebarContentTrailingInset: CGFloat {
-      switch presentation {
-      case .edgeToEdge:
-        max(12, layout.titlebarEdgePadding - 6)
-      case .floating:
-        12
-      }
     }
   }
 
@@ -1012,6 +1015,7 @@
     let headerLeading: (WorkspaceRouteDescriptor<RouteID>?) -> HeaderLeadingContent
     let headerTrailing: (WorkspaceRouteDescriptor<RouteID>?) -> HeaderTrailingContent
     let inspector: (WorkspaceRouteDescriptor<RouteID>?) -> InspectorContent
+    let isNativeStyle: Bool
     let layout: MacWorkspaceShellLayout
     let list: (WorkspaceRouteDescriptor<RouteID>) -> ListContent
     let prefersSinglePaneContent: Bool
@@ -1027,6 +1031,7 @@
       @ViewBuilder headerTrailing: @escaping (WorkspaceRouteDescriptor<RouteID>?) -> HeaderTrailingContent,
       @ViewBuilder inspector: @escaping (WorkspaceRouteDescriptor<RouteID>?) -> InspectorContent,
       isInspectorPresented: Binding<Bool>,
+      isNativeStyle: Bool,
       isSidebarVisible: Binding<Bool>,
       layout: MacWorkspaceShellLayout,
       @ViewBuilder list: @escaping (WorkspaceRouteDescriptor<RouteID>) -> ListContent,
@@ -1044,6 +1049,7 @@
       self.headerTrailing = headerTrailing
       self.inspector = inspector
       _isInspectorPresented = isInspectorPresented
+      self.isNativeStyle = isNativeStyle
       _isSidebarVisible = isSidebarVisible
       self.layout = layout
       self.list = list
@@ -1063,6 +1069,7 @@
           headerLeading: headerLeading,
           headerTrailing: headerTrailing,
           isInspectorPresented: $isInspectorPresented,
+          isNativeStyle: isNativeStyle,
           isSidebarVisible: $isSidebarVisible,
           layout: layout,
           theme: theme
@@ -1193,7 +1200,7 @@
     }
 
     private var contentSurface: Color {
-      theme.canvas
+      isNativeStyle ? Color(nsColor: .textBackgroundColor) : theme.canvas
     }
 
     private var inspectorPane: some View {
@@ -1229,6 +1236,7 @@
     let headerCenter: (WorkspaceRouteDescriptor<RouteID>?) -> HeaderCenterContent
     let headerLeading: (WorkspaceRouteDescriptor<RouteID>?) -> HeaderLeadingContent
     let headerTrailing: (WorkspaceRouteDescriptor<RouteID>?) -> HeaderTrailingContent
+    let isNativeStyle: Bool
     let layout: MacWorkspaceShellLayout
     let theme: MacWorkspaceShellTheme
 
@@ -1239,6 +1247,7 @@
       @ViewBuilder headerLeading: @escaping (WorkspaceRouteDescriptor<RouteID>?) -> HeaderLeadingContent,
       @ViewBuilder headerTrailing: @escaping (WorkspaceRouteDescriptor<RouteID>?) -> HeaderTrailingContent,
       isInspectorPresented: Binding<Bool>,
+      isNativeStyle: Bool,
       isSidebarVisible: Binding<Bool>,
       layout: MacWorkspaceShellLayout,
       theme: MacWorkspaceShellTheme
@@ -1249,13 +1258,14 @@
       self.headerLeading = headerLeading
       self.headerTrailing = headerTrailing
       _isInspectorPresented = isInspectorPresented
+      self.isNativeStyle = isNativeStyle
       _isSidebarVisible = isSidebarVisible
       self.layout = layout
       self.theme = theme
     }
 
     var body: some View {
-      HStack(alignment: .center, spacing: 6) {
+      HStack(alignment: .center, spacing: isNativeStyle ? 12 : 6) {
         Color.clear
           .frame(width: sidebarHiddenLeadingReservation)
 
@@ -1268,7 +1278,7 @@
         controls
         headerTrailing(store.selectedRoute)
       }
-      .padding(.horizontal, 10)
+      .padding(.horizontal, isNativeStyle ? 24 : 10)
       .frame(height: layout.headerHeight)
       .background(theme.canvas)
       .accessibilityElement(children: .contain)
@@ -1285,8 +1295,8 @@
         title: isSidebarVisible ? "Hide Sidebar" : "Show Sidebar",
         systemImage: "sidebar.left",
         theme: theme,
-        style: .custom,
-        fontSize: 15
+        style: isNativeStyle ? .glass : .custom,
+        fontSize: isNativeStyle ? 13 : 15
       ) {
         isSidebarVisible.toggle()
       }
@@ -1330,7 +1340,7 @@
     }
 
     private var controls: some View {
-      HStack(spacing: 4) {
+      HStack(spacing: isNativeStyle ? 8 : 4) {
         if hasInspector {
           inspectorVisibilityButton
         }
@@ -1343,7 +1353,7 @@
           } label: {
             Label(command.title, systemImage: command.systemImage)
               .labelStyle(.titleAndIcon)
-              .macWorkspaceHeaderControl(theme: theme, style: .custom)
+              .macWorkspaceHeaderControl(theme: theme, style: isNativeStyle ? .glass : .custom)
           }
           .buttonStyle(.plain)
           .disabled(!command.isEnabled)
@@ -1369,7 +1379,7 @@
           } label: {
             Label(primaryCommand.title, systemImage: primaryCommand.systemImage)
               .labelStyle(.titleAndIcon)
-              .macWorkspaceHeaderControl(theme: theme, isPrimary: true, style: .custom)
+              .macWorkspaceHeaderControl(theme: theme, isPrimary: true, style: isNativeStyle ? .glass : .custom)
           }
           .buttonStyle(.plain)
           .disabled(!primaryCommand.isEnabled)
@@ -1387,7 +1397,7 @@
         title: isInspectorPresented ? "Hide Inspector" : "Show Inspector",
         systemImage: "sidebar.trailing",
         theme: theme,
-        style: .custom
+        style: isNativeStyle ? .glass : .custom
       ) {
         isInspectorPresented.toggle()
       }
@@ -2205,15 +2215,17 @@
 
   private struct MacWorkspaceTitlebarConfigurator: NSViewRepresentable {
     var layout: MacWorkspaceShellLayout
+    var style: MacWorkspaceShellStyle
 
     func makeNSView(context: Context) -> NSView {
-      ConfiguringView(layout: layout)
+      ConfiguringView(layout: layout, style: style)
     }
 
     func updateNSView(_ nsView: NSView, context: Context) {
       guard let configuringView = nsView as? ConfiguringView
       else { return }
       configuringView.shellLayout = layout
+      configuringView.shellStyle = style
       configuringView.applyConfiguration()
     }
 
@@ -2221,9 +2233,11 @@
       private var baseTrafficLightFrames: [ObjectIdentifier: CGRect] = [:]
       private weak var observedWindow: NSWindow?
       var shellLayout: MacWorkspaceShellLayout
+      var shellStyle: MacWorkspaceShellStyle
 
-      init(layout: MacWorkspaceShellLayout) {
+      init(layout: MacWorkspaceShellLayout, style: MacWorkspaceShellStyle) {
         self.shellLayout = layout
+        self.shellStyle = style
         super.init(frame: .zero)
       }
 
@@ -2375,11 +2389,21 @@
       }
 
       private var trafficLightLeadingInset: CGFloat {
-        shellLayout.titlebarEdgePadding
+        switch shellStyle {
+        case .automatic, .nativeSplitView:
+          18
+        case .custom:
+          shellLayout.titlebarEdgePadding
+        }
       }
 
       private func trafficLightTopInset(for frame: CGRect) -> CGFloat {
-        max(0, (shellLayout.headerHeight - frame.height) / 2)
+        switch shellStyle {
+        case .automatic, .nativeSplitView:
+          18
+        case .custom:
+          max(0, (shellLayout.headerHeight - frame.height) / 2)
+        }
       }
 
       private func framesMatch(_ lhs: CGRect, _ rhs: CGRect) -> Bool {
@@ -2392,6 +2416,20 @@
   }
 
   private struct ShellMetrics {
+    var contentWidth: CGFloat
+    var height: CGFloat
+    var sidebarColumnWidth: CGFloat
+    var sidebarOuterWidth: CGFloat
+    var width: CGFloat
+  }
+
+  private struct NativeMetrics {
+    static let sidebarCornerRadius: CGFloat = 14
+    static let sidebarHorizontalFootprint = sidebarLeadingInset + sidebarTrailingInset
+    static let sidebarLeadingInset: CGFloat = 10
+    static let sidebarTrailingInset: CGFloat = 8
+    static let sidebarVerticalInset: CGFloat = 10
+
     var contentWidth: CGFloat
     var height: CGFloat
     var sidebarColumnWidth: CGFloat

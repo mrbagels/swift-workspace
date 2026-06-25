@@ -3,6 +3,22 @@
   import Foundation
   import SwiftUI
 
+  /// High-level macOS shell rendering style.
+  public enum MacWorkspaceShellStyle: String, CaseIterable, Codable, Equatable, Hashable, Sendable {
+    case automatic
+    case custom
+    case nativeSplitView
+
+    var resolved: Self {
+      switch self {
+      case .automatic:
+        .custom
+      case .custom, .nativeSplitView:
+        self
+      }
+    }
+  }
+
   /// Semantic tint used by shell navigation and brand marks.
   public enum MacWorkspaceTint: String, CaseIterable, Codable, Equatable, Hashable, Sendable {
     case blue
@@ -160,21 +176,6 @@
     func macWorkspaceDensity(_ density: MacWorkspaceDensity) -> some View {
       environment(\.macWorkspaceDensity, density)
         .environment(\.macWorkspaceDensityMetrics, MacWorkspaceDensityMetrics(density: density))
-    }
-  }
-
-  /// Custom sidebar presentation used by the Mac workspace shell.
-  public enum MacWorkspaceSidebarPresentation: String, CaseIterable, Codable, Equatable, Hashable, Sendable {
-    /// A full-height sidebar that runs edge-to-edge inside the left column.
-    case edgeToEdge
-    /// A rounded, inset sidebar panel inside the left column.
-    case floating
-
-    public var title: String {
-      switch self {
-      case .edgeToEdge: "Edge to Edge"
-      case .floating: "Floating"
-      }
     }
   }
 
@@ -396,7 +397,7 @@
     public var brand: MacWorkspaceBrand
     public var layout: MacWorkspaceShellLayout
     public var searchPlaceholder: String
-    public var sidebarPresentation: MacWorkspaceSidebarPresentation
+    public var style: MacWorkspaceShellStyle
     public var theme: MacWorkspaceShellTheme
 
     public var commandPaletteWidth: Double {
@@ -431,22 +432,23 @@
 
     public init(
       brand: MacWorkspaceBrand = .init(),
+      style: MacWorkspaceShellStyle = .custom,
       layout: MacWorkspaceShellLayout = .default,
       theme: MacWorkspaceShellTheme = .system,
       behavior: MacWorkspaceShellBehavior = .default,
-      searchPlaceholder: String = "Search",
-      sidebarPresentation: MacWorkspaceSidebarPresentation = .floating
+      searchPlaceholder: String = "Search"
     ) {
       self.behavior = behavior
       self.brand = brand
       self.layout = layout
       self.searchPlaceholder = searchPlaceholder
-      self.sidebarPresentation = sidebarPresentation
+      self.style = style
       self.theme = theme
     }
 
     public init(
       title: String = "Workspace",
+      style: MacWorkspaceShellStyle = .custom,
       commandPaletteWidth: Double = 560,
       detailMinimumWidth: Double = 520,
       searchPlaceholder: String = "Search commands and routes",
@@ -455,7 +457,6 @@
       sidebarMaximumWidth: Double = 380,
       brandSystemImage: String? = nil,
       brandTint: MacWorkspaceTint = .indigo,
-      sidebarPresentation: MacWorkspaceSidebarPresentation = .floating,
       theme: MacWorkspaceShellTheme = .system
     ) {
       var layout = MacWorkspaceShellLayout.default
@@ -475,11 +476,12 @@
       )
       self.layout = layout
       self.searchPlaceholder = searchPlaceholder
-      self.sidebarPresentation = sidebarPresentation
+      self.style = style
       self.theme = theme
     }
 
     public static let `default` = Self(brand: .init())
-    public static let custom = Self(brand: .init())
+    public static let nativeSplitView = Self(brand: .init(), style: .nativeSplitView)
+    public static let custom = Self(brand: .init(), style: .custom)
   }
 #endif

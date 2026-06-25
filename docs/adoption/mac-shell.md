@@ -115,17 +115,18 @@ server work, or storage writes.
 MacWorkspaceShellView(
   store: store.scope(state: \.workspace, action: \.workspace),
   configuration: MacWorkspaceShellConfiguration(
-    title: "Workspace"
+    title: "Workspace",
+    sidebarPresentation: .floating
   )
 ) { route in
   AppRouteView(route: route)
 }
 ```
 
-The default Mac renderer is the custom shell. Use
-`MacWorkspaceShellConfiguration.nativeSplitView` or pass
-`style: .nativeSplitView` only when an app explicitly wants the alternate native
-split-view treatment.
+The Mac renderer is custom-only. There is no alternate system split-view style
+in the active package surface. Use `sidebarPresentation: .floating` for a
+rounded, inset navigation panel that mimics native split-view spacing, or
+`sidebarPresentation: .edgeToEdge` for a full-height website-style sidebar.
 
 ## 5. Install Menus
 

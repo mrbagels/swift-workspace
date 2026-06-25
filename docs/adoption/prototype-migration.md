@@ -29,8 +29,7 @@ into the correct product boundary:
 | route window handoff | `WorkspaceSceneRequest` and `WorkspaceSceneValue` |
 | shared shell restoration | `WorkspaceRestoration` |
 | Mac chrome restoration | `MacWorkspaceRestoration` |
-| native split shell | `MacWorkspaceShellStyle.nativeSplitView` |
-| custom Mac shell | `MacWorkspaceShellStyle.custom` |
+| Mac shell renderer | `MacWorkspaceShellView` custom renderer |
 
 ## What To Port First
 
@@ -57,7 +56,7 @@ Do not copy prototype assumptions that make the Mac shell the engine:
 
 Use this checklist when comparing prototype behavior against the new Mac shell:
 
-- custom shell and native split-view styles both render from `WorkspaceFeature`,
+- the custom shell renders from `WorkspaceFeature`,
 - command palette opens from toolbar and native commands,
 - route commands, scene commands, app commands, toolbar commands, and primary
   commands share one command registry,
@@ -65,9 +64,9 @@ Use this checklist when comparing prototype behavior against the new Mac shell:
 - disabled and hidden routes reconcile in the reducer,
 - scene handoff uses typed `WorkspaceSceneValue`,
 - Mac restoration composes around shared restoration,
-- sidebar, inspector, split widths, density, and style remain Mac-specific,
+- sidebar presentation, inspector, split widths, and density remain Mac-specific,
 - stable accessibility identifiers exist for automation,
-- visual-state fixtures cover custom and native styles.
+- visual-state fixtures cover the custom Mac renderer state.
 
 ## iOS Parity Checklist
 

@@ -25,8 +25,7 @@
         detail: -1,
         inspector: .infinity
       ),
-      density: .comfortable,
-      style: .nativeSplitView
+      density: .comfortable
     )
 
     #expect(restoration.columnWidths.sidebar == 280)
@@ -88,12 +87,12 @@
   }
 
   @Test
-  func macShellConfigurationHasCustomStyleDefaults() {
+  func macShellConfigurationHasCustomDefaults() {
     let configuration = MacWorkspaceShellConfiguration.default
 
-    #expect(configuration.style == .custom)
     #expect(configuration.sidebarMinimumWidth < configuration.sidebarIdealWidth)
     #expect(configuration.sidebarIdealWidth < configuration.sidebarMaximumWidth)
+    #expect(configuration.sidebarPresentation == .floating)
     #expect(configuration.commandPaletteWidth >= 520)
   }
 

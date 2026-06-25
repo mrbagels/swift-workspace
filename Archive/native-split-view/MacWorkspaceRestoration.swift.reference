@@ -71,6 +71,7 @@
     public var density: MacWorkspaceDensity
     public var isInspectorPresented: Bool
     public var isSidebarVisible: Bool
+    public var style: MacWorkspaceShellStyle
     public var workspace: WorkspaceRestoration<RouteID>
 
     public init(
@@ -78,12 +79,14 @@
       isSidebarVisible: Bool = true,
       isInspectorPresented: Bool = false,
       columnWidths: MacWorkspaceColumnWidths = .init(),
-      density: MacWorkspaceDensity = .compact
+      density: MacWorkspaceDensity = .compact,
+      style: MacWorkspaceShellStyle = .custom
     ) {
       self.columnWidths = columnWidths.sanitized
       self.density = density
       self.isInspectorPresented = isInspectorPresented
       self.isSidebarVisible = isSidebarVisible
+      self.style = style
       self.workspace = workspace
     }
   }

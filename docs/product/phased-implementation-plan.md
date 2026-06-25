@@ -122,7 +122,7 @@ shape.
 Work:
 
 - Add a Mac shell configuration type.
-- Add custom shell and native split-view styles.
+- Add the custom Mac shell renderer.
 - Add command palette UI.
 - Add command menu integration.
 - Add titlebar configuration.
@@ -136,7 +136,7 @@ Work:
 
 Acceptance:
 
-- Mac users can choose custom or native shell style.
+- Mac users get the custom shell renderer as the only supported Mac shell.
 - The Mac shell consumes `WorkspaceTCA`, not a forked reducer.
 - Mac-specific restoration composes with shared workspace restoration.
 - The demo proves route selection, command execution, scene opening, and
@@ -144,8 +144,8 @@ Acceptance:
 
 Progress:
 
-- Added `MacWorkspaceShellConfiguration` for renderer style, title, split widths,
-  and command palette sizing.
+- Added `MacWorkspaceShellConfiguration` for title, split widths, and command
+  palette sizing.
 - Added `MacWorkspaceRestoration` and `MacWorkspaceColumnWidths` to compose
   Mac chrome restoration around shared `WorkspaceRestoration`.
 - Added a native command palette overlay backed by `WorkspaceFeature`
@@ -157,8 +157,10 @@ Progress:
 - Added `MacWorkspaceShellTests` for restoration, configuration, and command
   reference grouping.
 - Added stable Mac accessibility identifiers and command-palette focus hardening.
-- Added deterministic visual-state fixtures for native split-view and custom Mac
-  renderer states.
+- Added deterministic visual-state fixtures for the custom Mac renderer state.
+- Added configurable floating and edge-to-edge custom sidebar presentations for
+  native-feeling Mac navigation without reintroducing the system split-view
+  renderer.
 
 ## Phase 4: Build The iOS And iPadOS Renderer
 

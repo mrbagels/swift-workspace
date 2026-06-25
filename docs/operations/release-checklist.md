@@ -42,7 +42,6 @@ If a release touches only docs, still run `scripts/doctor.sh` and at least
 Before a public tag, manually inspect:
 
 - Mac demo custom style,
-- Mac demo native split-view style,
 - command palette search and keyboard focus,
 - native command menus,
 - route scene handoff,

@@ -10,14 +10,23 @@ final class MacWorkspaceDemoUITests: XCTestCase {
     let app = XCUIApplication()
     app.launch()
 
+    let shell = app.descendants(matching: .any)["mac-workspace-shell"]
+    XCTAssertTrue(shell.waitForExistence(timeout: 10))
+
+    let window = app.windows.firstMatch
+    XCTAssertTrue(window.waitForExistence(timeout: 4))
+
+    let inboxRoute = app.descendants(matching: .any)["mac-workspace-route-inbox"]
+    XCTAssertTrue(inboxRoute.waitForExistence(timeout: 4))
+    XCTAssertGreaterThanOrEqual(window.frame.minX, 0)
+    XCTAssertGreaterThanOrEqual(inboxRoute.frame.minX, window.frame.minX)
+    XCTAssertLessThanOrEqual(inboxRoute.frame.maxX, window.frame.maxX)
+
     XCTAssertTrue(
-      app.descendants(matching: .any)["mac-workspace-shell"]
-        .waitForExistence(timeout: 10)
-    )
-    XCTAssertTrue(
-      app.descendants(matching: .any)["mac-workspace-route-inbox"]
+      app.descendants(matching: .any)["mac-workspace-sidebar-presentation-picker"]
         .waitForExistence(timeout: 4)
     )
+
     app.typeKey("k", modifierFlags: .command)
 
     let searchField = app.textFields["mac-workspace-command-palette-search-field"]

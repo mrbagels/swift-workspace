@@ -171,6 +171,7 @@ struct MacWorkspaceDemoApp: App {
 
 struct MacWorkspaceDemoRootView: View {
   @Environment(\.openWindow) private var openWindow
+  @State private var sidebarPresentation: MacWorkspaceSidebarPresentation = .floating
   let store: StoreOf<MacWorkspaceDemoFeature>
 
   var body: some View {
@@ -178,8 +179,14 @@ struct MacWorkspaceDemoRootView: View {
 
     MacWorkspaceShellView(
       store: workspaceStore,
-      configuration: DemoNavigation.macConfiguration
-    ) {
+      configuration: configuration
+    ) { _ in
+      EmptyView()
+    } headerCenter: { _ in
+      EmptyView()
+    } headerTrailing: { _ in
+      sidebarPresentationPicker
+    } sidebarFooter: {
       HStack {
         Image(systemName: "checkmark.icloud")
         Text("iCloud primary")
@@ -195,6 +202,26 @@ struct MacWorkspaceDemoRootView: View {
       openWindow(value: pendingSceneValue)
       store.send(.sceneOpenHandled(pendingSceneValue.id))
     }
+  }
+
+  private var configuration: MacWorkspaceShellConfiguration {
+    var configuration = DemoNavigation.macConfiguration
+    configuration.sidebarPresentation = sidebarPresentation
+    return configuration
+  }
+
+  private var sidebarPresentationPicker: some View {
+    Picker("Sidebar Presentation", selection: $sidebarPresentation) {
+      ForEach(MacWorkspaceSidebarPresentation.allCases, id: \.self) { presentation in
+        Text(presentation.title)
+          .tag(presentation)
+      }
+    }
+    .pickerStyle(.segmented)
+    .labelsHidden()
+    .frame(width: 190)
+    .help("Sidebar Presentation")
+    .accessibilityIdentifier("mac-workspace-sidebar-presentation-picker")
   }
 }
 

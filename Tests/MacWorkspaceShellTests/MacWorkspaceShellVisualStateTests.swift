@@ -11,31 +11,9 @@
   }
 
   @Test
-  func nativeMacShellVisualStateMatchesFixture() throws {
-    let actual = MacShellVisualStateDescriptor(
-      configuration: .visualState(style: .nativeSplitView),
-      restoration: MacWorkspaceRestoration(
-        workspace: WorkspaceRestoration(
-          selectedRouteID: VisualRoute.inbox,
-          collapsedSectionIDs: [],
-          recentCommandIDs: [.appAction("refresh-workspace")]
-        ),
-        isSidebarVisible: true,
-        isInspectorPresented: false,
-        density: .compact,
-        style: .nativeSplitView
-      ),
-      registry: .visualState
-    )
-    .render()
-
-    try expectSnapshot(actual, named: "native-split-visual-state.txt")
-  }
-
-  @Test
   func customMacShellVisualStateMatchesFixture() throws {
     let actual = MacShellVisualStateDescriptor(
-      configuration: .visualState(style: .custom),
+      configuration: .visualState(),
       restoration: MacWorkspaceRestoration(
         workspace: WorkspaceRestoration(
           selectedRouteID: VisualRoute.settings,
@@ -50,8 +28,7 @@
           detail: 640,
           inspector: 340
         ),
-        density: .comfortable,
-        style: .custom
+        density: .comfortable
       ),
       registry: .visualState
     )
@@ -88,10 +65,11 @@
       let selectedScene = selectedRoute?.scenePresentation.kind.rawValue ?? "missing"
 
       lines.append("MacWorkspaceShellVisualState")
-      lines.append("style: \(resolvedStyle.rawValue)")
+      lines.append("style: custom")
       lines.append("density: \(restoration.density.rawValue)")
       lines.append("brand: \(configuration.brand.title) (\(configuration.brand.tint.rawValue))")
       lines.append("sidebar: \(restoration.isSidebarVisible ? "visible" : "hidden")")
+      lines.append("sidebar-presentation: \(configuration.sidebarPresentation.rawValue)")
       lines.append("inspector: \(restoration.isInspectorPresented ? "visible" : "hidden")")
       lines.append("selected: \(routeName(restoration.workspace.selectedRouteID))")
       lines.append("selected-presentation: \(selectedPresentation)")
@@ -145,15 +123,6 @@
       .joined(separator: " ")
     }
 
-    private var resolvedStyle: MacWorkspaceShellStyle {
-      switch configuration.style {
-      case .automatic:
-        .custom
-      case .custom, .nativeSplitView:
-        configuration.style
-      }
-    }
-
     private var widthsLine: String {
       let layout = configuration.layout
       return [
@@ -171,8 +140,9 @@
     ) -> [String] {
       var anchors = [
         "mac-workspace-shell",
-        "mac-workspace-shell-\(resolvedStyle == .custom ? "custom" : "native")",
+        "mac-workspace-shell-custom",
         "mac-workspace-sidebar",
+        "mac-workspace-sidebar-panel",
         "mac-workspace-sidebar-routes",
         "mac-workspace-command-search-button",
         "mac-workspace-content-header",
@@ -299,10 +269,9 @@
   }
 
   private extension MacWorkspaceShellConfiguration {
-    static func visualState(style: MacWorkspaceShellStyle) -> Self {
+    static func visualState() -> Self {
       Self(
         title: "Workspace Demo",
-        style: style,
         searchPlaceholder: "Search demo commands",
         brandSystemImage: "square.grid.2x2",
         brandTint: .indigo

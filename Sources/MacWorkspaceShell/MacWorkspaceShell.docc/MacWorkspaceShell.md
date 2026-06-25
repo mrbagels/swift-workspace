@@ -4,10 +4,10 @@ macOS renderer for the shared workspace engine.
 
 ## Overview
 
-`MacWorkspaceShell` renders `WorkspaceFeature` with Mac-native chrome. It owns
-presentation details such as the default custom shell style, opt-in native split
-views, command menus, toolbar affordances, command palette UI, inspector
-presentation, density, and Mac-specific restoration.
+`MacWorkspaceShell` renders `WorkspaceFeature` with custom Mac chrome. It owns
+presentation details such as command menus, toolbar affordances, command palette
+UI, inspector presentation, density, sidebar presentation, and Mac-specific
+restoration.
 
 It does not own workspace logic, persistence writes, server calls, documents, or
 app domain behavior.
@@ -21,11 +21,11 @@ Custom Mac clients can import `WorkspaceCore` and `WorkspaceTCA` directly.
 
 - ``MacWorkspaceShellView``
 - ``MacWorkspaceShellConfiguration``
-- ``MacWorkspaceShellStyle``
 - ``MacWorkspaceShellLayout``
 - ``MacWorkspaceShellBehavior``
 - ``MacWorkspaceBrand``
 - ``MacWorkspaceTint``
+- ``MacWorkspaceSidebarPresentation``
 
 ### Commands
 

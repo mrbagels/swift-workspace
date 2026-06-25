@@ -43,7 +43,6 @@ enum MinimalMacWorkspace {
 
   static let configuration = MacWorkspaceShellConfiguration(
     title: "Minimal Workspace",
-    style: .nativeSplitView,
     searchPlaceholder: "Search workspace"
   )
 }
