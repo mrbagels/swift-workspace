@@ -131,6 +131,21 @@ Acceptance:
 - The demo proves route selection, command execution, scene opening, and
   persistence handoff.
 
+Progress:
+
+- Added `MacWorkspaceShellConfiguration` for renderer style, title, split widths,
+  and command palette sizing.
+- Added `MacWorkspaceRestoration` and `MacWorkspaceColumnWidths` to compose
+  Mac chrome restoration around shared `WorkspaceRestoration`.
+- Added a native command palette overlay backed by `WorkspaceFeature`
+  command-palette state.
+- Added `MacWorkspaceCommandReferenceView` over shared
+  `WorkspaceCommandSections`.
+- Added toolbar and command menu entry points for command palette and refresh
+  commands in the Mac demo.
+- Added `MacWorkspaceShellTests` for restoration, configuration, and command
+  reference grouping.
+
 ## Phase 4: Build The iOS And iPadOS Renderer
 
 Goal:
@@ -253,9 +268,9 @@ Acceptance:
 ## Immediate Next Moves
 
 1. Run full verification after each migration slice.
-2. Add Mac-specific restoration wrapper.
-3. Port the prototype command palette as a Mac renderer feature.
-4. Add Mac shell configuration for custom and native split-view styles.
-5. Add command menu integration on top of `WorkspaceCommandSections`.
+2. Expand the Mac renderer with inspector and route-window handoff.
+3. Add command menu generation helpers on top of `WorkspaceCommandSections`.
+4. Build the adaptive iOS and iPadOS renderer.
+5. Add persistence stores beyond UserDefaults.
 6. Add a custom-renderer example that imports only `WorkspaceCore` and
    `WorkspaceTCA`.

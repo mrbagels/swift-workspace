@@ -10,6 +10,12 @@ enum DemoRoute: String, CaseIterable, Codable, Hashable, Sendable {
 }
 
 enum DemoNavigation {
+  static let macConfiguration = MacWorkspaceShellConfiguration(
+    title: "Workspace Demo",
+    style: .nativeSplitView,
+    searchPlaceholder: "Search demo commands"
+  )
+
   static let registry = WorkspaceNavigationRegistry(
     sections: [
       WorkspaceRouteSection(
@@ -83,7 +89,10 @@ struct MacWorkspaceDemoApp: App {
 
   var body: some Scene {
     WindowGroup("Workspace Demo") {
-      MacWorkspaceShellView(store: store) {
+      MacWorkspaceShellView(
+        store: store,
+        configuration: DemoNavigation.macConfiguration
+      ) {
         HStack {
           Image(systemName: "checkmark.icloud")
           Text("iCloud primary")
@@ -98,6 +107,19 @@ struct MacWorkspaceDemoApp: App {
     .windowStyle(.hiddenTitleBar)
     .windowToolbarStyle(.unified)
     .defaultSize(width: 1100, height: 720)
+    .commands {
+      CommandMenu("Workspace") {
+        Button("Command Palette") {
+          store.send(.commandPaletteRequested)
+        }
+        .keyboardShortcut("k")
+
+        Button("Refresh Workspace") {
+          store.send(.commandMenuCommandSelected(.appAction("refresh-workspace")))
+        }
+        .keyboardShortcut("r")
+      }
+    }
   }
 }
 
