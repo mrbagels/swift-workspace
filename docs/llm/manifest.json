@@ -1,0 +1,48 @@
+{
+  "project": "swift-workspace",
+  "purpose": "Clean product root for the reusable workspace engine, platform shells, optional persistence adapters, and companion server planning.",
+  "entrypoints": [
+    {
+      "path": "README.md",
+      "description": "Human overview of package products, layout, and verification commands."
+    },
+    {
+      "path": "AGENTS.md",
+      "description": "Project-specific working rules for coding agents."
+    },
+    {
+      "path": "docs/architecture/workspace-engine-split.md",
+      "description": "Durable architecture split between engine, adapters, platform shells, and server companion."
+    },
+    {
+      "path": "docs/product/phased-implementation-plan.md",
+      "description": "Phased implementation plan with outcomes, acceptance criteria, and sequencing."
+    },
+    {
+      "path": "docs/features/server-side-companion.md",
+      "description": "Server-side scope with iCloud as primary storage."
+    },
+    {
+      "path": "docs/technical/package-map.md",
+      "description": "Target graph, product responsibilities, and dependency rules."
+    },
+    {
+      "path": "docs/operations/verification.md",
+      "description": "Local verification, XcodeGen, package tests, and demo builds."
+    }
+  ],
+  "sourceOfTruth": [
+    "Package.swift",
+    "project.yml",
+    "Sources",
+    "Tests",
+    "Apps",
+    "docs"
+  ],
+  "generatedArtifacts": [
+    "SwiftWorkspace.xcodeproj",
+    ".build",
+    ".swiftpm",
+    "DerivedData"
+  ]
+}

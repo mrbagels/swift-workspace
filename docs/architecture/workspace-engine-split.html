@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Workspace Engine Split</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
+    }
+    body {
+      margin: 0;
+      background: Canvas;
+      color: CanvasText;
+    }
+    main {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 48px 28px 72px;
+    }
+    h1 {
+      font-size: 42px;
+      line-height: 1.1;
+      margin: 0 0 8px;
+    }
+    h2 {
+      border-top: 1px solid color-mix(in srgb, CanvasText 18%, transparent);
+      margin-top: 36px;
+      padding-top: 24px;
+    }
+    .lede {
+      color: color-mix(in srgb, CanvasText 70%, transparent);
+      font-size: 18px;
+      max-width: 760px;
+    }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 24px 0 36px;
+    }
+    .actions a,
+    summary {
+      border: 1px solid color-mix(in srgb, CanvasText 20%, transparent);
+      border-radius: 8px;
+      color: inherit;
+      cursor: pointer;
+      display: inline-block;
+      padding: 8px 12px;
+      text-decoration: none;
+    }
+    section {
+      margin: 24px 0;
+    }
+    li {
+      margin: 4px 0;
+    }
+    code {
+      background: color-mix(in srgb, CanvasText 8%, transparent);
+      border-radius: 5px;
+      padding: 2px 5px;
+    }
+    details {
+      margin-top: 32px;
+    }
+    textarea {
+      box-sizing: border-box;
+      font: 13px ui-monospace, SFMono-Regular, Menlo, monospace;
+      min-height: 260px;
+      margin-top: 12px;
+      padding: 16px;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Workspace Engine Split</h1>
+    <p class="lede"><code>swift-workspace</code> separates shared application mechanics from platform presentation and optional adapters. The Mac shell is one renderer over the engine, not the engine itself.</p>
+
+    <div class="actions">
+      <a href="workspace-engine-split.md">Open Markdown</a>
+      <a href="workspace-engine-split.md" download>Download Markdown</a>
+    </div>
+
+    <section>
+      <h2>Core Boundary</h2>
+      <p><code>WorkspaceCore</code> owns pure Swift concepts: typed commands, command roles, command reference grouping, typed route descriptors, metadata patches, availability, command search, command policy, route-open requests, URL parsing, scene requests, scene values, scene collections, and shared restoration payloads.</p>
+      <p>It must not import SwiftUI, TCA, SQLiteData, CloudKit, AppKit, or UIKit.</p>
+    </section>
+
+    <section>
+      <h2>Reducer Boundary</h2>
+      <p><code>WorkspaceTCA</code> owns platform-neutral transitions: route selection, command execution, palette state, policy enforcement, scene-request delegates, restoration, recents, collapsed sections, navigation replacement, and route metadata reconciliation.</p>
+      <p>It must not own Mac chrome, iOS navigation presentation, storage writes, CloudKit writes, server calls, or app domain behavior.</p>
+    </section>
+
+    <section>
+      <h2>Renderer Boundary</h2>
+      <p><code>MacWorkspaceShell</code> and <code>IOSWorkspaceShell</code> render the same engine with native platform choices. Shared behavior moves down. Platform chrome stays in the renderer.</p>
+    </section>
+
+    <section>
+      <h2>Adapter Boundary</h2>
+      <p>Persistence and external services are optional products. UserDefaults, SQLiteData, CloudKit, and future server clients should be imported only by apps that need them.</p>
+    </section>
+
+    <section>
+      <h2>Server Boundary</h2>
+      <p>The server is a companion service for accounts, entitlements, templates, jobs, integrations, diagnostics, and support workflows. iCloud and local storage remain primary for user-owned data.</p>
+    </section>
+
+    <details>
+      <summary>View Markdown Source</summary>
+      <textarea readonly># Workspace Engine Split
+
+Open or download the adjacent Markdown file for the complete source:
+docs/architecture/workspace-engine-split.md
+
+This HTML file is a review artifact for polished reading. The Markdown file is
+the editable source of truth.</textarea>
+    </details>
+  </main>
+</body>
+</html>

@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Phased Implementation Plan</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
+    }
+    body {
+      margin: 0;
+      background: Canvas;
+      color: CanvasText;
+    }
+    main {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 48px 28px 72px;
+    }
+    h1 {
+      font-size: 42px;
+      line-height: 1.1;
+      margin: 0 0 8px;
+    }
+    h2 {
+      border-top: 1px solid color-mix(in srgb, CanvasText 18%, transparent);
+      margin-top: 36px;
+      padding-top: 24px;
+    }
+    .lede {
+      color: color-mix(in srgb, CanvasText 70%, transparent);
+      font-size: 18px;
+      max-width: 760px;
+    }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 24px 0 36px;
+    }
+    .actions a,
+    summary {
+      border: 1px solid color-mix(in srgb, CanvasText 20%, transparent);
+      border-radius: 8px;
+      color: inherit;
+      cursor: pointer;
+      display: inline-block;
+      padding: 8px 12px;
+      text-decoration: none;
+    }
+    .phase {
+      display: grid;
+      gap: 8px;
+      padding: 10px 0;
+    }
+    code {
+      background: color-mix(in srgb, CanvasText 8%, transparent);
+      border-radius: 5px;
+      padding: 2px 5px;
+    }
+    textarea {
+      box-sizing: border-box;
+      font: 13px ui-monospace, SFMono-Regular, Menlo, monospace;
+      min-height: 260px;
+      margin-top: 12px;
+      padding: 16px;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Phased Implementation Plan</h1>
+    <p class="lede">A staged path from clean scaffold to professional reusable workspace product, using the old Mac Shell as prototype reference while building the new source of truth in <code>swift-workspace</code>.</p>
+
+    <div class="actions">
+      <a href="phased-implementation-plan.md">Open Markdown</a>
+      <a href="phased-implementation-plan.md" download>Download Markdown</a>
+    </div>
+
+    <section class="phase">
+      <h2>Phase 0: Fresh Root And Guardrails</h2>
+      <p>Complete for the initial scaffold: new root, package, XcodeGen project, docs lifecycle, first products, demo apps, and verification scripts.</p>
+    </section>
+
+    <section class="phase">
+      <h2>Phase 1: Stabilize WorkspaceCore</h2>
+      <p>In progress: command roles and grouping, route metadata patches, URL route parsing, Codable storage-safe models, and expanded core tests are in place.</p>
+    </section>
+
+    <section class="phase">
+      <h2>Phase 2: Make WorkspaceTCA Boring</h2>
+      <p>In progress: reducer tests now cover palette lifecycle, recents, policy, route-open behavior, scene delegates, restoration, and metadata reconciliation.</p>
+    </section>
+
+    <section class="phase">
+      <h2>Phase 3: Port Proven Mac Shell Behavior</h2>
+      <p>Bring over custom and native Mac shells, command palette, menus, titlebar behavior, inspector, windows, accessibility, and visual tests.</p>
+    </section>
+
+    <section class="phase">
+      <h2>Phase 4: Build The iOS And iPadOS Renderer</h2>
+      <p>Prove the engine is platform-neutral with adaptive iPhone and iPad shell experiences.</p>
+    </section>
+
+    <section class="phase">
+      <h2>Phase 5: Persistence And iCloud Primary Storage</h2>
+      <p>Complete UserDefaults, SQLiteData, and CloudKit adapters while keeping app-owned data app-owned.</p>
+    </section>
+
+    <section class="phase">
+      <h2>Phase 6: Companion Server</h2>
+      <p>Add optional server capabilities for entitlements, templates, jobs, diagnostics, and integrations without replacing iCloud.</p>
+    </section>
+
+    <section class="phase">
+      <h2>Phase 7: Distribution And Adoption</h2>
+      <p>Publish from the root Swift package with DocC, quickstarts, release checks, and starter apps.</p>
+    </section>
+
+    <section class="phase">
+      <h2>Phase 8: Professional Polish</h2>
+      <p>Run design, accessibility, performance, API, and demo polish passes.</p>
+    </section>
+
+    <details>
+      <summary>View Markdown Source</summary>
+      <textarea readonly># Phased Implementation Plan
+
+Open or download the adjacent Markdown file for the complete source:
+docs/product/phased-implementation-plan.md
+
+This HTML file is a review artifact for polished reading. The Markdown file is
+the editable source of truth.</textarea>
+    </details>
+  </main>
+</body>
+</html>
