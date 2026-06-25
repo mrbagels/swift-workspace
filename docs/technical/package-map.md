@@ -9,7 +9,7 @@ Last updated: 2026-06-25
 | `WorkspaceCore` | Foundation | Shared route, command, scene, search, policy, and restoration models. |
 | `WorkspaceTCA` | WorkspaceCore, TCA | Platform-neutral reducer. |
 | `WorkspaceEngine` | WorkspaceCore, WorkspaceTCA, WorkspacePersistence, TCA | Convenience import for wholesale engine adoption. |
-| `WorkspacePersistence` | WorkspaceCore | JSON and UserDefaults persistence helpers. |
+| `WorkspacePersistence` | WorkspaceCore | JSON, UserDefaults, and file persistence helpers. |
 | `WorkspaceSQLiteData` | WorkspaceCore, SQLiteData | Optional SQLiteData records, migrations, and codecs. |
 | `WorkspaceCloudKit` | WorkspaceCore, CloudKit | Optional CloudKit adapter contracts. |
 | `MacWorkspaceShell` | WorkspaceCore, WorkspaceTCA, SwiftUI | macOS renderer. |
@@ -70,3 +70,17 @@ Last updated: 2026-06-25
 - hardware keyboard shortcut display in command results,
 - scene-aware context actions for routes that prefer separate scenes,
 - iOS-specific restoration for column preference and compact navigation path.
+
+`WorkspacePersistence` currently provides:
+
+- JSON encoding and decoding for `WorkspaceRestoration`,
+- UserDefaults-backed restoration persistence,
+- file-backed restoration persistence with parent directory creation and atomic
+  writes.
+
+`WorkspaceCloudKit` currently provides:
+
+- CloudKit database, sync scope, zone, and conflict policy values,
+- stable record-name helpers for restoration, route metadata, and scenes,
+- Codable restoration and route-metadata envelopes,
+- async adapter protocol for app-owned live CloudKit implementations.

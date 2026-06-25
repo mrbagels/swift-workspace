@@ -208,6 +208,18 @@ Acceptance:
 - App-owned document and workflow state remains app-owned.
 - iCloud is documented as primary storage for user-owned data.
 
+Progress:
+
+- Added `WorkspaceFilePersistence` for atomic JSON restoration files.
+- Added file persistence tests for missing files, parent directory creation,
+  roundtrip loading, and missing-file removal.
+- Expanded `WorkspaceCloudKit` with database scope, sync scope, zone,
+  conflict-policy, record-name, restoration-envelope, and route-metadata
+  envelope contracts.
+- Added an async `WorkspaceCloudKitSyncAdapter` protocol for app-owned live
+  CloudKit implementations.
+- Added CloudKit contract tests for Codable envelopes and conflict policy.
+
 ## Phase 6: Companion Server
 
 Goal:

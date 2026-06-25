@@ -27,3 +27,40 @@ func userDefaultsPersistenceRoundTripsRestoration() throws {
 
   #expect(try persistence.load() == restoration)
 }
+
+@Test
+func filePersistenceRoundTripsRestorationAndCreatesParentDirectory() throws {
+  let rootURL = FileManager.default.temporaryDirectory
+    .appendingPathComponent("WorkspacePersistenceTests-\(UUID().uuidString)")
+  let fileURL = rootURL
+    .appendingPathComponent("nested")
+    .appendingPathComponent("restoration.json")
+  defer { try? FileManager.default.removeItem(at: rootURL) }
+
+  let persistence = WorkspaceFilePersistence<TestRoute>(fileURL: fileURL)
+  let restoration = WorkspaceRestoration(
+    selectedRouteID: TestRoute.inbox,
+    collapsedSectionIDs: ["main"],
+    recentCommandIDs: [.route(.inbox), .route(.settings)]
+  )
+
+  #expect(try persistence.load() == nil)
+
+  try persistence.save(restoration)
+
+  #expect(FileManager.default.fileExists(atPath: fileURL.path))
+  #expect(try persistence.load() == restoration)
+}
+
+@Test
+func filePersistenceRemoveIgnoresMissingFiles() throws {
+  let rootURL = FileManager.default.temporaryDirectory
+    .appendingPathComponent("WorkspacePersistenceTests-\(UUID().uuidString)")
+  let fileURL = rootURL.appendingPathComponent("restoration.json")
+  defer { try? FileManager.default.removeItem(at: rootURL) }
+
+  let persistence = WorkspaceFilePersistence<TestRoute>(fileURL: fileURL)
+
+  try persistence.remove()
+  #expect(try persistence.load() == nil)
+}

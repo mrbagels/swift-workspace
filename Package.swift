@@ -123,5 +123,11 @@ let package = Package(
         "WorkspacePersistence",
       ]
     ),
+    .testTarget(
+      name: "WorkspaceCloudKitTests",
+      dependencies: [
+        "WorkspaceCloudKit",
+      ]
+    ),
   ]
 )
