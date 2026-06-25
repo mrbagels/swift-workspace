@@ -329,6 +329,8 @@ Progress:
 - Added custom-renderer example tests to `scripts/verify.sh`.
 - Added documentation checks and a GitHub Actions workflow for package tests,
   docs, XcodeGen, the Mac demo, and the minimal Mac starter.
+- Added opt-in Mac and iOS UI smoke tests for shell launch, route visibility,
+  and command-search coverage.
 
 Remaining:
 

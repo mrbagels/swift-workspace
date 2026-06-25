@@ -5,9 +5,9 @@ macOS renderer for the shared workspace engine.
 ## Overview
 
 `MacWorkspaceShell` renders `WorkspaceFeature` with Mac-native chrome. It owns
-presentation details such as native split views, custom shell style, command
-menus, toolbar affordances, command palette UI, inspector presentation, density,
-and Mac-specific restoration.
+presentation details such as the default custom shell style, opt-in native split
+views, command menus, toolbar affordances, command palette UI, inspector
+presentation, density, and Mac-specific restoration.
 
 It does not own workspace logic, persistence writes, server calls, documents, or
 app domain behavior.

@@ -48,6 +48,20 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.kylebegeman.swiftworkspace.mac-demo
         PRODUCT_NAME: Workspace Demo
 
+  MacWorkspaceDemoUITests:
+    type: bundle.ui-testing
+    platform: macOS
+    deploymentTarget: "26.0"
+    sources:
+      - path: Apps/MacWorkspaceDemoUITests
+    dependencies:
+      - target: MacWorkspaceDemo
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        PRODUCT_BUNDLE_IDENTIFIER: com.kylebegeman.swiftworkspace.mac-demo-ui-tests
+        TEST_TARGET_NAME: MacWorkspaceDemo
+
   IOSWorkspaceDemo:
     type: application
     platform: iOS
@@ -69,6 +83,20 @@ targets:
         INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: YES
         PRODUCT_BUNDLE_IDENTIFIER: com.kylebegeman.swiftworkspace.ios-demo
         PRODUCT_NAME: Workspace Demo
+
+  IOSWorkspaceDemoUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    deploymentTarget: "26.0"
+    sources:
+      - path: Apps/IOSWorkspaceDemoUITests
+    dependencies:
+      - target: IOSWorkspaceDemo
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        PRODUCT_BUNDLE_IDENTIFIER: com.kylebegeman.swiftworkspace.ios-demo-ui-tests
+        TEST_TARGET_NAME: IOSWorkspaceDemo
 
   MinimalMacWorkspaceApp:
     type: application
@@ -118,7 +146,8 @@ schemes:
     test:
       config: Debug
       gatherCoverageData: true
-      targets: []
+      targets:
+        - MacWorkspaceDemoUITests
 
   IOSWorkspaceDemo:
     build:
@@ -129,7 +158,8 @@ schemes:
     test:
       config: Debug
       gatherCoverageData: true
-      targets: []
+      targets:
+        - IOSWorkspaceDemoUITests
 
   MinimalMacWorkspaceApp:
     build:

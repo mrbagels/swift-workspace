@@ -80,7 +80,7 @@
       isInspectorPresented: Bool = false,
       columnWidths: MacWorkspaceColumnWidths = .init(),
       density: MacWorkspaceDensity = .compact,
-      style: MacWorkspaceShellStyle = .nativeSplitView
+      style: MacWorkspaceShellStyle = .custom
     ) {
       self.columnWidths = columnWidths.sanitized
       self.density = density

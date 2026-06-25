@@ -90,6 +90,14 @@ Build both demo apps:
 VERIFY_BUILD_IOS=1 scripts/verify.sh
 ```
 
+Run UI smoke tests:
+
+```sh
+VERIFY_RUN_UI_TESTS=1 scripts/verify.sh
+VERIFY_BUILD_IOS=1 VERIFY_RUN_UI_TESTS=1 scripts/verify.sh
+```
+
 GitHub Actions runs the macOS verification path from
 `.github/workflows/swift-workspace.yml`. Use the manual workflow input
-`build_ios` when the iOS demo and starter targets should be built in CI.
+`build_ios` when the iOS demo and starter targets should be built in CI, and
+`run_ui_tests` when UI smoke tests should run.

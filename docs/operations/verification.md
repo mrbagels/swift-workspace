@@ -34,6 +34,16 @@ Use the iOS build option after changes to `IOSWorkspaceShell`, the iOS demo, the
 iOS starter app, or shared APIs consumed by iOS-only SwiftUI code. Plain
 `swift test` runs on macOS and does not compile the `#if os(iOS)` renderer body.
 
+Set `VERIFY_RUN_UI_TESTS=1` to run the UI smoke tests after the app builds:
+
+```sh
+VERIFY_RUN_UI_TESTS=1 scripts/verify.sh
+VERIFY_BUILD_IOS=1 VERIFY_RUN_UI_TESTS=1 scripts/verify.sh
+```
+
+The iOS UI smoke test uses `VERIFY_IOS_TEST_DESTINATION`, defaulting to
+`platform=iOS Simulator,name=iPhone 17 Pro`.
+
 ## Example Checks
 
 ```sh
@@ -57,7 +67,8 @@ The repository workflow lives at `.github/workflows/swift-workspace.yml`. It run
 on GitHub's `macos-26` runner, installs XcodeGen when needed, and executes
 `scripts/verify.sh` from the `swift-workspace` folder. The iOS demo and starter
 builds are available through the manual `workflow_dispatch` input named
-`build_ios`.
+`build_ios`. UI smoke tests are available through the manual `run_ui_tests`
+input.
 
 ## Generated Output
 

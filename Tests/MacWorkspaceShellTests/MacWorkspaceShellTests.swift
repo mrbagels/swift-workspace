@@ -88,10 +88,10 @@
   }
 
   @Test
-  func macShellConfigurationHasNativeSplitViewDefaults() {
+  func macShellConfigurationHasCustomStyleDefaults() {
     let configuration = MacWorkspaceShellConfiguration.default
 
-    #expect(configuration.style == .nativeSplitView)
+    #expect(configuration.style == .custom)
     #expect(configuration.sidebarMinimumWidth < configuration.sidebarIdealWidth)
     #expect(configuration.sidebarIdealWidth < configuration.sidebarMaximumWidth)
     #expect(configuration.commandPaletteWidth >= 520)

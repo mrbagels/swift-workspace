@@ -31,13 +31,13 @@
     static func commandIdentifier<RouteID: Hashable & Sendable>(
       _ id: WorkspaceCommandIdentifier<RouteID>
     ) -> String {
-      "mac-workspace-command-\(identifierComponent(id))"
+      "mac-workspace-command-\(commandIdentifierComponent(id))"
     }
 
     static func commandPaletteRowIdentifier<RouteID: Hashable & Sendable>(
       _ id: WorkspaceCommandIdentifier<RouteID>
     ) -> String {
-      "mac-workspace-command-palette-row-\(identifierComponent(id))"
+      "mac-workspace-command-palette-row-\(commandIdentifierComponent(id))"
     }
 
     static func routeIdentifier<RouteID>(_ id: RouteID) -> String {
@@ -46,6 +46,25 @@
 
     static func sceneButtonIdentifier<RouteID>(_ id: RouteID) -> String {
       "mac-workspace-open-scene-\(identifierComponent(id))"
+    }
+
+    private static func commandIdentifierComponent<RouteID: Hashable & Sendable>(
+      _ id: WorkspaceCommandIdentifier<RouteID>
+    ) -> String {
+      switch id {
+      case .appAction(let commandID):
+        "app-action-\(identifierComponent(commandID))"
+      case .primaryAction(let commandID):
+        "primary-action-\(identifierComponent(commandID))"
+      case .route(let routeID):
+        "route-\(identifierComponent(routeID))"
+      case .scene(let routeID):
+        "scene-\(identifierComponent(routeID))"
+      case .system(let commandID):
+        "system-\(identifierComponent(commandID))"
+      case .toolbarAction(let commandID):
+        "toolbar-action-\(identifierComponent(commandID))"
+      }
     }
   }
 
@@ -222,7 +241,7 @@
         let metrics = nativeMetrics(for: geometry.size)
         HStack(spacing: 0) {
           if isSidebarVisible {
-            nativeSidebar(width: metrics.sidebarColumnWidth)
+            nativeSidebar(width: metrics.sidebarOuterWidth)
               .frame(width: metrics.sidebarOuterWidth)
               .transition(sidebarTransition)
           }
@@ -250,8 +269,11 @@
       .accessibilityIdentifier("mac-workspace-shell-native")
     }
 
-    private func nativeSidebar(width: CGFloat) -> some View {
-      MacWorkspaceSidebar(
+    private func nativeSidebar(width outerWidth: CGFloat) -> some View {
+      let horizontalInsets = NativeMetrics.sidebarHorizontalFootprint
+      let contentWidth = max(0, outerWidth - horizontalInsets)
+
+      return MacWorkspaceSidebar(
         store: store,
         brand: configuration.brand,
         footer: sidebarFooterContent,
@@ -260,7 +282,7 @@
         searchPlaceholder: configuration.searchPlaceholder,
         theme: configuration.theme
       )
-      .frame(width: width)
+      .frame(width: contentWidth)
       .frame(maxHeight: .infinity)
       .background(.regularMaterial)
       .clipShape(RoundedRectangle(cornerRadius: NativeMetrics.sidebarCornerRadius, style: .continuous))

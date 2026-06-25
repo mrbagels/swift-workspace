@@ -12,7 +12,7 @@
     var resolved: Self {
       switch self {
       case .automatic:
-        .nativeSplitView
+        .custom
       case .custom, .nativeSplitView:
         self
       }
@@ -432,7 +432,7 @@
 
     public init(
       brand: MacWorkspaceBrand = .init(),
-      style: MacWorkspaceShellStyle = .nativeSplitView,
+      style: MacWorkspaceShellStyle = .custom,
       layout: MacWorkspaceShellLayout = .default,
       theme: MacWorkspaceShellTheme = .system,
       behavior: MacWorkspaceShellBehavior = .default,
@@ -448,7 +448,7 @@
 
     public init(
       title: String = "Workspace",
-      style: MacWorkspaceShellStyle = .nativeSplitView,
+      style: MacWorkspaceShellStyle = .custom,
       commandPaletteWidth: Double = 560,
       detailMinimumWidth: Double = 520,
       searchPlaceholder: String = "Search commands and routes",

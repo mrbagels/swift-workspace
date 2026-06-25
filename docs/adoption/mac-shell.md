@@ -115,13 +115,17 @@ server work, or storage writes.
 MacWorkspaceShellView(
   store: store.scope(state: \.workspace, action: \.workspace),
   configuration: MacWorkspaceShellConfiguration(
-    title: "Workspace",
-    style: .nativeSplitView
+    title: "Workspace"
   )
 ) { route in
   AppRouteView(route: route)
 }
 ```
+
+The default Mac renderer is the custom shell. Use
+`MacWorkspaceShellConfiguration.nativeSplitView` or pass
+`style: .nativeSplitView` only when an app explicitly wants the alternate native
+split-view treatment.
 
 ## 5. Install Menus
 

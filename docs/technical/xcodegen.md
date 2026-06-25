@@ -30,6 +30,9 @@ This keeps the generated project aligned with SwiftPM distribution.
 - `MinimalMacWorkspaceApp`
 - `MinimalIOSWorkspaceApp`
 
+`MacWorkspaceDemo` and `IOSWorkspaceDemo` also wire UI smoke test targets for
+launch, route, and command-search coverage.
+
 Package tests should be run with SwiftPM:
 
 ```sh

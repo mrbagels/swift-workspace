@@ -12,7 +12,6 @@ enum DemoRoute: String, CaseIterable, Codable, Hashable, Sendable {
 enum DemoNavigation {
   static let macConfiguration = MacWorkspaceShellConfiguration(
     title: "Workspace Demo",
-    style: .nativeSplitView,
     searchPlaceholder: "Search demo commands"
   )
 

@@ -21,6 +21,8 @@ Last updated: 2026-06-25
 | --- | --- | --- |
 | `MacWorkspaceDemo` | macOS | First consumer of `MacWorkspaceShell`. |
 | `IOSWorkspaceDemo` | iOS | First consumer of `IOSWorkspaceShell`. |
+| `MacWorkspaceDemoUITests` | macOS | Opt-in UI smoke coverage for Mac shell launch, routes, and command search. |
+| `IOSWorkspaceDemoUITests` | iOS | Opt-in UI smoke coverage for iOS shell launch, routes, and command search. |
 | `MinimalMacWorkspaceApp` | macOS | Smallest starter target for Mac shell adoption. |
 | `MinimalIOSWorkspaceApp` | iOS | Smallest starter target for iOS shell adoption. |
 
@@ -70,7 +72,8 @@ and route count instead of repeatedly scanning every patch for every route.
 
 `MacWorkspaceShell` currently provides:
 
-- configurable native split-view rendering,
+- custom shell rendering by default,
+- configurable native split-view rendering as an opt-in style,
 - toolbar and command-menu entry points,
 - `MacWorkspaceCommands` for native menu generation from
   `WorkspaceCommandSections`,

@@ -148,7 +148,7 @@
     private var resolvedStyle: MacWorkspaceShellStyle {
       switch configuration.style {
       case .automatic:
-        .nativeSplitView
+        .custom
       case .custom, .nativeSplitView:
         configuration.style
       }
