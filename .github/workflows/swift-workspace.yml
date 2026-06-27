@@ -1,0 +1,55 @@
+name: swift-workspace
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+      - next
+  workflow_dispatch:
+    inputs:
+      build_ios:
+        description: "Build iOS demo and starter targets"
+        required: false
+        type: boolean
+        default: false
+      run_ui_tests:
+        description: "Run UI smoke tests"
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: swift-workspace-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Verify
+    runs-on: macos-26
+    timeout-minutes: 75
+    env:
+      VERIFY_BUILD_IOS: ${{ github.event_name == 'workflow_dispatch' && inputs.build_ios && '1' || '0' }}
+      VERIFY_RUN_UI_TESTS: ${{ github.event_name == 'workflow_dispatch' && inputs.run_ui_tests && '1' || '0' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Print toolchain
+        run: |
+          xcodebuild -version
+          swift --version
+          xcrun --sdk macosx --show-sdk-version
+
+      - name: Install XcodeGen
+        run: |
+          if ! command -v xcodegen >/dev/null 2>&1; then
+            brew install xcodegen
+          fi
+          xcodegen --version
+
+      - name: Verify
+        run: scripts/verify.sh
