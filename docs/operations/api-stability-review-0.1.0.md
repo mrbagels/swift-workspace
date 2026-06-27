@@ -1,6 +1,6 @@
 # API Stability Review: 0.1.0
 
-Date: 2026-06-26
+Date: 2026-06-27
 
 ## Decision
 
@@ -22,6 +22,9 @@ adoption docs.
 - `WorkspacePersistence`
 - `WorkspaceSQLiteData`
 - `WorkspaceCloudKit`
+- `WorkspaceShellDesignSystem`
+- `WorkspaceAutomationBridge`
+- `WorkspaceServerClient`
 - `MacWorkspaceShell`
 - `IOSWorkspaceShell`
 - Demo targets, starter apps, custom renderer example, adoption docs, package
@@ -81,8 +84,11 @@ Adapter rules: pass.
   app database lifecycle.
 - CloudKit helpers provide contracts and envelopes without owning the app
   container lifecycle.
-- Server client code remains intentionally absent until a real app workflow
-  proves the need.
+- `WorkspaceServerClient` is optional, Comet-backed, and not linked by core
+  engine, persistence, or renderer products.
+- `WorkspaceAutomationBridge` is descriptor-only and leaves concrete App Intent
+  types to host app targets.
+- `WorkspaceShellDesignSystem` owns reusable SwiftUI primitives only.
 
 Docs and examples: pass.
 
@@ -95,21 +101,23 @@ Docs and examples: pass.
 ## Release Notes For 0.1.0
 
 `0.1.0` should be described as an initial public beta for reusable Swift
-workspace routing, command, scene, persistence, CloudKit contract, Mac shell,
-and iOS shell APIs.
+workspace routing, command, scene, persistence, CloudKit contract, automation,
+optional server client, design-system, Mac shell, and iOS shell APIs.
 
 Known limits:
 
 - Manual demo QA is still required before tagging.
-- Server companion behavior is documented but not implemented.
+- Server companion behavior is available as an optional typed client only. No
+  backend is included.
 - Pixel-level visual snapshots are not yet exhaustive.
 - The package currently targets iOS 26 and macOS 26.
 
 ## Follow-Up Gates
 
 - Do not tag `0.1.0` until Mac and iOS manual QA pass.
-- Do not add `WorkspaceServerClient` until the first server-backed workflow,
-  authentication model, request payloads, offline behavior, retry behavior,
-  cancellation behavior, and privacy requirements are known.
+- Do not wire `WorkspaceServerClient` into an app flow until the first
+  server-backed workflow, authentication model, request payloads, offline
+  behavior, retry behavior, cancellation behavior, and privacy requirements are
+  known.
 - For future public behavior, add reducer and renderer fixtures before merging
   the feature.

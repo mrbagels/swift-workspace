@@ -20,7 +20,7 @@
     },
     {
       "path": "docs/features/server-side-companion.md",
-      "description": "Server-side scope with iCloud as primary storage."
+      "description": "Optional Comet-backed server client scope with iCloud as primary storage."
     },
     {
       "path": "docs/technical/package-map.md",
@@ -32,7 +32,15 @@
     },
     {
       "path": "docs/adoption/README.md",
-      "description": "Consumer adoption guide index for Mac, iOS, engine-only, custom renderer, persistence, CloudKit, and prototype migration paths."
+      "description": "Consumer adoption guide index for Mac, iOS, engine-only, custom renderer, persistence, CloudKit, automation, server client, and prototype migration paths."
+    },
+    {
+      "path": "docs/adoption/automation.md",
+      "description": "App Intents, Shortcuts, widgets, controls, and automation catalog adoption guide."
+    },
+    {
+      "path": "docs/adoption/server-client.md",
+      "description": "Optional WorkspaceServerClient adoption guide for thin companion server workflows."
     },
     {
       "path": "docs/operations/api-review-checklist.md",

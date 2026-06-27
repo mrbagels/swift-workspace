@@ -1,6 +1,6 @@
 # Phased Implementation Plan
 
-Last updated: 2026-06-26
+Last updated: 2026-06-27
 
 ## Purpose
 
@@ -250,8 +250,8 @@ Progress:
 
 ## Phase 6: Companion Server
 
-Status: decision-gated. Do not add `WorkspaceServerClient` until a consuming app
-proves the first server-backed workflow.
+Status: complete for the optional typed client contract. Live backend workflows
+remain app-owned and decision-gated.
 
 Goal:
 
@@ -265,7 +265,7 @@ Work:
 - Add template catalog endpoints.
 - Add background job endpoints for AI, import, export, and diagnostics.
 - Add webhook relay shape.
-- Add `WorkspaceServerClient` only after app flows require it.
+- Keep `WorkspaceServerClient` optional and outside core engine products.
 - Keep all server calls app-owned effects.
 
 Acceptance:
@@ -279,14 +279,19 @@ Progress:
 
 - Defined server scope, anti-scope, initial API areas, and the implementation
   gate in `docs/features/server-side-companion.md`.
-- Kept server behavior outside `WorkspaceCore`, `WorkspaceTCA`, and platform
-  shells.
+- Added optional `WorkspaceServerClient` backed by Comet.
+- Added typed health, entitlement, template, job, and diagnostics requests.
+- Added `Effect.workspaceServerRequest` for TCA reducers that opt into server
+  effects.
+- Added `CometTesting` coverage for request paths, methods, payloads, and
+  decoding.
+- Kept server behavior outside `WorkspaceCore`, `WorkspaceTCA`, persistence,
+  and platform shells.
 
-Blocked Until:
+Decision-Gated:
 
-- First concrete server-backed workflow.
-- Authentication and entitlement model.
-- Request and response payloads.
+- First real backend workflow.
+- App authentication and entitlement source of truth.
 - Offline, retry, cancellation, privacy, and retention requirements.
 
 ## Phase 7: Distribution And Adoption
@@ -327,6 +332,8 @@ Progress:
   persistence, CloudKit, and prototype migration paths.
 - Added API review and release checklists.
 - Added DocC landing-page catalogs for every public package product.
+- Added DocC catalogs for `WorkspaceShellDesignSystem`,
+  `WorkspaceAutomationBridge`, and `WorkspaceServerClient`.
 - Added minimal Mac and iOS starter app targets under `Examples/`.
 - Added custom-renderer example tests to `scripts/verify.sh`.
 - Added documentation checks and a GitHub Actions workflow for package tests,
@@ -339,7 +346,7 @@ Progress:
 
 Remaining:
 
-- Tag a semantic version after manual demo review.
+- Tag a semantic version after manual demo review and Comet release alignment.
 
 ## Phase 8: Professional Polish
 
@@ -373,10 +380,12 @@ Autonomous:
 
 - Add more reducer and renderer fixtures when new public behavior is introduced.
 - Keep docs and package map synchronized with source changes.
+- Keep `WorkspaceServerClient` aligned with the published Comet release.
 
 Manual Or Decision-Gated:
 
-- Choose the first real companion-server workflow before adding a server client.
+- Choose the first real companion-server workflow before wiring app behavior to
+  the server client.
 - Choose package version, public repository URL, and release timing before
   tagging.
 - Run hands-on Mac and iOS demo review before public release.

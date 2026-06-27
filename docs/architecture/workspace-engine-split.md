@@ -1,6 +1,6 @@
 # Workspace Engine Split
 
-Last updated: 2026-06-25
+Last updated: 2026-06-27
 
 ## Goal
 
@@ -112,14 +112,38 @@ It should support:
 
 It must not make CloudKit a hidden dependency of the core engine.
 
-### WorkspaceServer
+### WorkspaceShellDesignSystem
 
-No server client target exists yet. Server functionality should be introduced
-only after one or more app flows need typed companion capabilities.
+`WorkspaceShellDesignSystem` is optional SwiftUI presentation infrastructure. It
+owns small reusable primitives shared by bundled shells and custom renderers:
 
-When it exists, it should remain optional and app-owned. The shared reducer may
-emit command delegates that an app maps to server effects, but the engine should
-not call the server directly.
+- badges,
+- keycaps,
+- section labels,
+- route status views,
+- palette and metrics values.
+
+It must not own routing, command execution, persistence, server behavior, or app
+domain state.
+
+### WorkspaceAutomationBridge
+
+`WorkspaceAutomationBridge` is optional. It turns the command registry into a
+serializable automation catalog and stable handoff payloads for app-owned App
+Intents, Shortcuts, widgets, and controls.
+
+It does not define concrete App Intent types. Host app targets own their intent
+types, phrases, permissions, entities, and runtime handoff routing.
+
+### WorkspaceServerClient
+
+`WorkspaceServerClient` is optional and Comet-backed. It provides typed
+companion service requests for entitlements, templates, jobs, diagnostics, and
+health checks.
+
+It must remain separate from `WorkspaceCore`, `WorkspaceTCA`, and renderers. The
+shared reducer may emit command delegates that an app maps to server effects,
+but the engine should not call the server directly.
 
 ### MacWorkspaceShell
 
@@ -241,8 +265,13 @@ Allowed dependencies:
 - `WorkspacePersistence`: WorkspaceCore, Foundation.
 - `WorkspaceSQLiteData`: WorkspaceCore, SQLiteData.
 - `WorkspaceCloudKit`: WorkspaceCore, CloudKit.
-- `MacWorkspaceShell`: WorkspaceCore, WorkspaceTCA, SwiftUI, AppKit as needed.
-- `IOSWorkspaceShell`: WorkspaceCore, WorkspaceTCA, SwiftUI, UIKit as needed.
+- `WorkspaceShellDesignSystem`: WorkspaceCore, SwiftUI.
+- `WorkspaceAutomationBridge`: WorkspaceCore.
+- `WorkspaceServerClient`: WorkspaceCore, Comet, CometTCA, TCA.
+- `MacWorkspaceShell`: WorkspaceCore, WorkspaceTCA, WorkspaceShellDesignSystem,
+  SwiftUI, AppKit as needed.
+- `IOSWorkspaceShell`: WorkspaceCore, WorkspaceTCA, WorkspaceShellDesignSystem,
+  SwiftUI, UIKit as needed.
 
 Forbidden dependency directions:
 

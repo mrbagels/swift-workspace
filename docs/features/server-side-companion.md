@@ -1,6 +1,6 @@
 # Server-Side Companion
 
-Last updated: 2026-06-25
+Last updated: 2026-06-27
 
 ## Principle
 
@@ -40,37 +40,37 @@ backed.
 Server calls should live in app features or optional client products, not inside
 `WorkspaceCore` or `WorkspaceTCA`.
 
-## Future Package
+## Optional Package
 
-A future server client should be an optional product:
+`WorkspaceServerClient` is now an optional product backed by Comet:
 
 ```text
 WorkspaceServerClient
-  OpenAPI or typed URLSession client
+  typed Comet requests
   request and response models
   retry policy helpers
   auth token injection hooks
   no dependency from WorkspaceCore
 ```
 
+The product is suitable for apps that already need companion capabilities. It is
+not required by the core engine, TCA reducer, bundled renderers, persistence, or
+iCloud contracts.
+
 ## Initial API Areas
 
 - `GET /v1/entitlements`
-- `GET /v1/feature-flags`
 - `GET /v1/templates`
-- `POST /v1/jobs/import`
-- `POST /v1/jobs/export`
-- `POST /v1/jobs/ai`
+- `POST /v1/jobs`
 - `GET /v1/jobs/{id}`
 - `POST /v1/diagnostics`
-- `POST /v1/webhooks/relay`
 
-These are placeholders for product planning. They should not be implemented
-until an app workflow proves the need.
+Feature flags, webhook relay, integration credentials, and support bundle
+exchange remain future contract areas.
 
 ## Implementation Gate
 
-No server client should be added until a consuming app identifies:
+No live server workflow should be added to an app until the app identifies:
 
 - the first concrete workflow,
 - the authentication model,
@@ -80,6 +80,6 @@ No server client should be added until a consuming app identifies:
 - retry and cancellation behavior,
 - privacy and retention requirements.
 
-Until those decisions exist, the correct implementation is documentation,
-command delegates, and app-owned effects. `WorkspaceCore`, `WorkspaceTCA`, and
-platform shells must continue to work without a companion server.
+Until those decisions exist, use documentation, command delegates, and app-owned
+effects. `WorkspaceCore`, `WorkspaceTCA`, and platform shells must continue to
+work without a companion server.

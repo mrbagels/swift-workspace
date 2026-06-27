@@ -74,6 +74,9 @@ docc_catalogs=(
   "Sources/WorkspacePersistence/WorkspacePersistence.docc/WorkspacePersistence.md"
   "Sources/WorkspaceSQLiteData/WorkspaceSQLiteData.docc/WorkspaceSQLiteData.md"
   "Sources/WorkspaceCloudKit/WorkspaceCloudKit.docc/WorkspaceCloudKit.md"
+  "Sources/WorkspaceShellDesignSystem/WorkspaceShellDesignSystem.docc/WorkspaceShellDesignSystem.md"
+  "Sources/WorkspaceAutomationBridge/WorkspaceAutomationBridge.docc/WorkspaceAutomationBridge.md"
+  "Sources/WorkspaceServerClient/WorkspaceServerClient.docc/WorkspaceServerClient.md"
   "Sources/MacWorkspaceShell/MacWorkspaceShell.docc/MacWorkspaceShell.md"
   "Sources/IOSWorkspaceShell/IOSWorkspaceShell.docc/IOSWorkspaceShell.md"
 )

@@ -14,8 +14,10 @@ source of truth for new architecture.
 6. `docs/technical/package-map.md`
 7. `docs/operations/verification.md`
 8. `docs/adoption/README.md`
-9. `docs/operations/api-review-checklist.md`
-10. `docs/operations/release-checklist.md`
+9. `docs/adoption/automation.md`
+10. `docs/adoption/server-client.md`
+11. `docs/operations/api-review-checklist.md`
+12. `docs/operations/release-checklist.md`
 
 ## Current Intent
 
@@ -23,12 +25,12 @@ The product should let client apps adopt the shared workspace engine in pieces
 or wholesale. The same engine must support:
 
 - a custom macOS workspace shell,
-- a native macOS shell treatment,
 - an iOS and iPadOS renderer,
 - fully custom client renderers,
 - optional persistence adapters,
 - iCloud-primary storage,
-- thin server companion capabilities.
+- automation and App Intent handoff descriptors,
+- thin optional server companion capabilities.
 
 ## Rules Of Thumb
 

@@ -10,6 +10,8 @@ Available guides:
 - [Custom renderer quickstart](custom-renderer.md)
 - [Persistence adapter guide](persistence.md)
 - [CloudKit adoption guide](cloudkit.md)
+- [Automation bridge guide](automation.md)
+- [Server client guide](server-client.md)
 - [Prototype migration guide](prototype-migration.md)
 
 Starter app targets:

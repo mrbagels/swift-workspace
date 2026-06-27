@@ -1,6 +1,6 @@
 # Package Map
 
-Last updated: 2026-06-26
+Last updated: 2026-06-27
 
 ## Products
 
@@ -12,6 +12,9 @@ Last updated: 2026-06-26
 | `WorkspacePersistence` | WorkspaceCore | JSON, UserDefaults, and file persistence helpers. |
 | `WorkspaceSQLiteData` | WorkspaceCore, SQLiteData | Optional SQLiteData records, migrations, and codecs. |
 | `WorkspaceCloudKit` | WorkspaceCore, CloudKit | Optional CloudKit adapter contracts. |
+| `WorkspaceShellDesignSystem` | WorkspaceCore, SwiftUI | Shared SwiftUI primitives for bundled shells and custom renderers. |
+| `WorkspaceAutomationBridge` | WorkspaceCore | Serializable automation catalog and App Intent handoff descriptors. |
+| `WorkspaceServerClient` | WorkspaceCore, Comet, CometTCA, TCA | Optional companion server client for typed non-storage workflows. |
 | `MacWorkspaceShell` | WorkspaceCore, WorkspaceTCA, SwiftUI | macOS renderer. |
 | `IOSWorkspaceShell` | WorkspaceCore, WorkspaceTCA, SwiftUI | iOS and iPadOS renderer. |
 
@@ -50,7 +53,9 @@ settings.
 `WorkspaceCore` includes:
 
 - route descriptors, sections, availability, and registry values,
+- route content states and route status metadata,
 - command IDs, roles, sources, targets, policy, and search,
+- registry validation diagnostics for CI and debug surfaces,
 - command reference grouping with `WorkspaceCommandSections`,
 - route metadata patches with `WorkspaceRouteMetadataPatch`,
 - route-open requests, rejections, and URL parsing,
@@ -64,6 +69,7 @@ settings.
 - command execution and command policy enforcement,
 - route selection and route-open handling,
 - preferred scene request delegates,
+- pinned route and recent route tracking,
 - recent command tracking,
 - collapsed section tracking,
 - restoration loading,
@@ -111,6 +117,29 @@ and route count instead of repeatedly scanning every patch for every route.
 - Codable restoration and route-metadata envelopes,
 - async adapter protocol for app-owned live CloudKit implementations.
 
+`WorkspaceShellDesignSystem` currently provides:
+
+- `WorkspaceShellBadge`,
+- `WorkspaceShellKeycap`,
+- `WorkspaceShellSectionLabel`,
+- `WorkspaceShellRouteStatusView`,
+- reusable palette and metrics values for custom renderers.
+
+`WorkspaceAutomationBridge` currently provides:
+
+- an automation catalog built from `WorkspaceNavigationRegistry`,
+- command descriptors for routes, scenes, app actions, toolbar actions, primary
+  actions, and system actions,
+- handoff payloads that app-owned App Intents can pass to the main scene,
+- shortcut descriptor templates for app-owned `AppShortcutsProvider` types.
+
+`WorkspaceServerClient` currently provides:
+
+- an optional Comet-backed HTTP client,
+- typed health, entitlement, template, job, and diagnostics requests,
+- a TCA `Effect.workspaceServerRequest` helper,
+- tests backed by `CometTesting`.
+
 ## Adoption And Distribution Docs
 
 Consumer-facing adoption docs now cover:
@@ -121,11 +150,13 @@ Consumer-facing adoption docs now cover:
 - custom renderer adoption,
 - persistence adapters,
 - CloudKit contracts,
+- automation bridge adoption,
+- server client adoption,
 - prototype migration.
 
-Operations docs now cover API review and release checklists. Live server-client
-distribution remains decision-gated until an app workflow proves a server API.
-CI runs from `.github/workflows/swift-workspace.yml` and uses
+Operations docs now cover API review and release checklists. The server client
+is optional and intentionally thin, and it must remain outside core engine and
+renderer products. CI runs from `.github/workflows/swift-workspace.yml` and uses
 `scripts/verify.sh` as its source of truth.
 
 The initial public beta is versioned as `0.1.0`, published from
@@ -139,6 +170,9 @@ DocC landing pages are scaffolded in each public product target:
 - `Sources/WorkspacePersistence/WorkspacePersistence.docc`
 - `Sources/WorkspaceSQLiteData/WorkspaceSQLiteData.docc`
 - `Sources/WorkspaceCloudKit/WorkspaceCloudKit.docc`
+- `Sources/WorkspaceShellDesignSystem/WorkspaceShellDesignSystem.docc`
+- `Sources/WorkspaceAutomationBridge/WorkspaceAutomationBridge.docc`
+- `Sources/WorkspaceServerClient/WorkspaceServerClient.docc`
 - `Sources/MacWorkspaceShell/MacWorkspaceShell.docc`
 - `Sources/IOSWorkspaceShell/IOSWorkspaceShell.docc`
 
