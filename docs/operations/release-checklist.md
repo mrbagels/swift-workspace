@@ -6,21 +6,26 @@ Use this checklist for semantic-versioned package releases from the
 ## Versioning
 
 - Use semantic versioning.
+- Initial public beta version: `0.1.0`.
 - Patch releases fix bugs without changing public API contracts.
 - Minor releases add compatible API, docs, examples, or optional products.
 - Major releases allow source-breaking public API changes.
 - Keep `MARKETING_VERSION` in `project.yml` aligned with the release tag when
   demo apps need a visible version bump.
+- Publish from `https://github.com/mrbagels/swift-workspace`.
+- License: MIT.
 
 ## Preflight
 
 1. Review `docs/operations/api-review-checklist.md`.
-2. Confirm generated outputs are ignored and unstaged.
-3. Confirm no secrets, `.env` files, CloudKit container credentials, or private
+2. Review `docs/operations/api-stability-review-0.1.0.md` for the initial
+   public beta.
+3. Confirm generated outputs are ignored and unstaged.
+4. Confirm no secrets, `.env` files, CloudKit container credentials, or private
    data are staged.
-4. Confirm `Package.swift`, `project.yml`, README, package map, and adoption docs
+5. Confirm `Package.swift`, `project.yml`, README, package map, and adoption docs
    agree.
-5. Confirm release notes describe new products, changed APIs, migration steps,
+6. Confirm release notes describe new products, changed APIs, migration steps,
    and known limitations.
 
 ## Verification

@@ -1,0 +1,23 @@
+.DS_Store
+
+# XcodeGen output.
+*.xcodeproj/
+*.xcworkspace/
+xcuserdata/
+*.xcuserstate
+
+# SwiftPM and build output.
+.build/
+.swiftpm/
+DerivedData/
+
+# Local logs and verification scratch files.
+*.log
+*.xcresult/
+
+# Secrets and local configuration.
+.env
+.env.*
+*.p8
+*.cer
+*.mobileprovision

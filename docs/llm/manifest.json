@@ -39,6 +39,10 @@
       "description": "Public API, package boundary, adapter, renderer, and documentation review checklist."
     },
     {
+      "path": "docs/operations/api-stability-review-0.1.0.md",
+      "description": "Completed 0.1.0 public API stability review and release gates."
+    },
+    {
       "path": "docs/operations/release-checklist.md",
       "description": "Semantic versioning, release verification, manual review, tagging, and post-release checklist."
     }

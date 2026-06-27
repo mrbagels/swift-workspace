@@ -1,6 +1,6 @@
 # Phased Implementation Plan
 
-Last updated: 2026-06-25
+Last updated: 2026-06-26
 
 ## Purpose
 
@@ -333,6 +333,9 @@ Progress:
   docs, XcodeGen, the Mac demo, and the minimal Mac starter.
 - Added opt-in Mac and iOS UI smoke tests for shell launch, route visibility,
   and command-search coverage.
+- Selected `0.1.0` as the initial public beta version, MIT as the license, and
+  `https://github.com/mrbagels/swift-workspace` as the public repository.
+- Completed the `0.1.0` API stability review.
 
 Remaining:
 

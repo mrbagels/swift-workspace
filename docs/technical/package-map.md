@@ -1,6 +1,6 @@
 # Package Map
 
-Last updated: 2026-06-25
+Last updated: 2026-06-26
 
 ## Products
 
@@ -127,6 +127,9 @@ Operations docs now cover API review and release checklists. Live server-client
 distribution remains decision-gated until an app workflow proves a server API.
 CI runs from `.github/workflows/swift-workspace.yml` and uses
 `scripts/verify.sh` as its source of truth.
+
+The initial public beta is versioned as `0.1.0`, published from
+`https://github.com/mrbagels/swift-workspace`, and licensed under MIT.
 
 DocC landing pages are scaffolded in each public product target:
 
