@@ -15,6 +15,7 @@ let package = Package(
     .library(name: "WorkspacePersistence", targets: ["WorkspacePersistence"]),
     .library(name: "WorkspaceSQLiteData", targets: ["WorkspaceSQLiteData"]),
     .library(name: "WorkspaceCloudKit", targets: ["WorkspaceCloudKit"]),
+    .library(name: "WorkspaceShellDesignSystem", targets: ["WorkspaceShellDesignSystem"]),
     .library(name: "MacWorkspaceShell", targets: ["MacWorkspaceShell"]),
     .library(name: "IOSWorkspaceShell", targets: ["IOSWorkspaceShell"]),
   ],
@@ -72,9 +73,16 @@ let package = Package(
       ]
     ),
     .target(
+      name: "WorkspaceShellDesignSystem",
+      dependencies: [
+        "WorkspaceCore",
+      ]
+    ),
+    .target(
       name: "MacWorkspaceShell",
       dependencies: [
         "WorkspaceCore",
+        "WorkspaceShellDesignSystem",
         "WorkspaceTCA",
         .product(
           name: "ComposableArchitecture",
@@ -86,6 +94,7 @@ let package = Package(
       name: "IOSWorkspaceShell",
       dependencies: [
         "WorkspaceCore",
+        "WorkspaceShellDesignSystem",
         "WorkspaceTCA",
         .product(
           name: "ComposableArchitecture",

@@ -55,6 +55,11 @@ enum DemoNavigation {
             id: DemoRoute.settings,
             title: "Settings",
             systemImage: "gearshape",
+            contentState: .empty(
+              title: "No Settings Changes",
+              message: "Workspace preferences are already current.",
+              systemImage: "gearshape"
+            ),
             keywords: ["preferences"],
             shortcut: .command(","),
             presentation: .fullWidth,
@@ -71,6 +76,20 @@ enum DemoNavigation {
         keywords: ["reload", "sync"],
         shortcut: .command("r")
       ),
+      .toolbarAction(
+        id: "export-workspace",
+        title: "Export",
+        systemImage: "square.and.arrow.up",
+        keywords: ["share", "download"],
+        shortcut: .command("e")
+      ),
+      .primaryAction(
+        id: "new-item",
+        title: "New Item",
+        systemImage: "plus",
+        keywords: ["create", "compose"],
+        shortcut: .command("n")
+      ),
     ]
   )
 }
@@ -80,6 +99,8 @@ struct IOSWorkspaceDemoApp: App {
   @State private var store = Store(
     initialState: WorkspaceFeature<DemoRoute>.State(
       navigation: DemoNavigation.registry,
+      pinnedRouteIDs: [.inbox],
+      recentRouteIDs: [.settings],
       selectedRouteID: .inbox
     )
   ) {

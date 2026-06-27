@@ -12,12 +12,16 @@ widths: sidebar=300 list=360 detail=640 inspector=340
 palette: width=560 top=88 results=380 placeholder="Search demo commands"
 panes:
 - header
-- full-width
+- route-status-empty
 - inspector
 sections:
 - Workspace [collapsed]
 - System [expanded]
-  - settings "Settings" selected enabled badge=none shortcut=Cmd+, presentation=fullWidth scene=singleton
+  - settings "Settings" selected enabled badge=none state=empty shortcut=Cmd+, presentation=fullWidth scene=singleton
+pinned-routes:
+- settings
+recent-routes:
+- inbox
 command-sections:
 - Workspace
   - route:inbox "Inbox" enabled role=navigation source=navigation shortcut=Cmd+1
@@ -41,7 +45,10 @@ accessibility:
 - mac-workspace-content-header
 - mac-workspace-content-title
 - mac-workspace-sidebar-toggle-button
+- mac-workspace-sidebar-section-workspace-pinned-routes
+- mac-workspace-sidebar-section-workspace-recent-routes
 - mac-workspace-route-settings
+- mac-workspace-route-status-settings
 - mac-workspace-inspector-pane
 - mac-workspace-inspector-toggle-button
 - mac-workspace-command-palette

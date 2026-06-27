@@ -16,10 +16,14 @@ surfaces:
 - compact-navigation-path
 sections:
 - Workspace [expanded]
-  - inbox "Inbox" selected enabled badge=12 shortcut=Cmd+1 presentation=listDetail scene=primary
-  - review "Review" unselected disabled badge=4 shortcut=Cmd+2 presentation=listDetail scene=primary
+  - inbox "Inbox" selected enabled badge=12 state=ready shortcut=Cmd+1 presentation=listDetail scene=primary
+  - review "Review" unselected disabled badge=4 state=ready shortcut=Cmd+2 presentation=listDetail scene=primary
 - System [expanded]
-  - settings "Settings" unselected enabled badge=none shortcut=Cmd+, presentation=fullWidth scene=singleton
+  - settings "Settings" unselected enabled badge=none state=empty shortcut=Cmd+, presentation=fullWidth scene=singleton
+pinned-routes:
+- inbox
+recent-routes:
+- settings
 command-sections:
 - Workspace
   - route:inbox "Inbox" enabled role=navigation source=navigation shortcut=Cmd+1
@@ -38,6 +42,7 @@ accessibility:
 - ios-workspace-route-list
 - ios-workspace-command-search-button
 - ios-workspace-clear-recent-commands-button
+- ios-workspace-clear-recent-routes-button
 - ios-workspace-route-inbox
 - ios-workspace-detail-inbox
 - ios-workspace-command-search

@@ -3,6 +3,7 @@
   import ComposableArchitecture
   import SwiftUI
   import WorkspaceCore
+  import WorkspaceShellDesignSystem
   import WorkspaceTCA
 
   private enum MacWorkspaceCommandPaletteFocusField: Hashable {
@@ -552,9 +553,54 @@
 
         ScrollView(.vertical, showsIndicators: false) {
           VStack(alignment: .leading, spacing: 18) {
+            if !store.pinnedRoutes.isEmpty {
+              MacWorkspaceSidebarSectionView(
+                isExpanded: true,
+                isRoutePinned: { store.pinnedRouteIDs.contains($0) },
+                section: WorkspaceRouteSection(
+                  id: "workspace-pinned-routes",
+                  title: "Pinned",
+                  routes: store.pinnedRoutes
+                ),
+                selectedRouteID: store.selectedRouteID,
+                theme: theme,
+                tint: brand.tint
+              ) { id in
+                store.send(.routeSelected(id))
+              } onToggleExpansion: { _ in
+              } onTogglePin: { id in
+                store.send(.routePinToggled(id))
+              } onOpenScene: { id in
+                store.send(.sceneRequested(id))
+              }
+            }
+
+            if !recentRoutesExcludingPinned.isEmpty {
+              MacWorkspaceSidebarSectionView(
+                isExpanded: true,
+                isRoutePinned: { store.pinnedRouteIDs.contains($0) },
+                section: WorkspaceRouteSection(
+                  id: "workspace-recent-routes",
+                  title: "Recent",
+                  routes: recentRoutesExcludingPinned
+                ),
+                selectedRouteID: store.selectedRouteID,
+                theme: theme,
+                tint: brand.tint
+              ) { id in
+                store.send(.routeSelected(id))
+              } onToggleExpansion: { _ in
+              } onTogglePin: { id in
+                store.send(.routePinToggled(id))
+              } onOpenScene: { id in
+                store.send(.sceneRequested(id))
+              }
+            }
+
             ForEach(store.visibleSections) { section in
               MacWorkspaceSidebarSectionView(
                 isExpanded: !section.isCollapsible || !store.collapsedSectionIDs.contains(section.id),
+                isRoutePinned: { store.pinnedRouteIDs.contains($0) },
                 section: section,
                 selectedRouteID: store.selectedRouteID,
                 theme: theme,
@@ -563,6 +609,8 @@
                 store.send(.routeSelected(id))
               } onToggleExpansion: { sectionID in
                 store.send(.sectionDisclosureButtonTapped(sectionID))
+              } onTogglePin: { id in
+                store.send(.routePinToggled(id))
               } onOpenScene: { id in
                 store.send(.sceneRequested(id))
               }
@@ -737,6 +785,12 @@
         12
       }
     }
+
+    private var recentRoutesExcludingPinned: [WorkspaceRouteDescriptor<RouteID>] {
+      store.recentRoutes.filter { route in
+        !store.pinnedRouteIDs.contains(route.id)
+      }
+    }
   }
 
   private struct MacWorkspaceSidebarSectionView<RouteID: Hashable & Sendable>: View {
@@ -744,9 +798,11 @@
     @Environment(\.macWorkspaceDensityMetrics) private var metrics
 
     let isExpanded: Bool
+    let isRoutePinned: (RouteID) -> Bool
     let onOpenScene: (RouteID) -> Void
     let onSelect: (RouteID) -> Void
     let onToggleExpansion: (WorkspaceRouteSectionID) -> Void
+    let onTogglePin: (RouteID) -> Void
     let section: WorkspaceRouteSection<RouteID>
     let selectedRouteID: RouteID
     let theme: MacWorkspaceShellTheme
@@ -754,18 +810,22 @@
 
     init(
       isExpanded: Bool,
+      isRoutePinned: @escaping (RouteID) -> Bool,
       section: WorkspaceRouteSection<RouteID>,
       selectedRouteID: RouteID,
       theme: MacWorkspaceShellTheme,
       tint: MacWorkspaceTint,
       onSelect: @escaping (RouteID) -> Void,
       onToggleExpansion: @escaping (WorkspaceRouteSectionID) -> Void,
+      onTogglePin: @escaping (RouteID) -> Void,
       onOpenScene: @escaping (RouteID) -> Void
     ) {
       self.isExpanded = isExpanded
+      self.isRoutePinned = isRoutePinned
       self.onOpenScene = onOpenScene
       self.onSelect = onSelect
       self.onToggleExpansion = onToggleExpansion
+      self.onTogglePin = onTogglePin
       self.section = section
       self.selectedRouteID = selectedRouteID
       self.theme = theme
@@ -792,6 +852,7 @@
       let badge = route.badge.map(String.init)
       let disabledReason = route.availability.disabledReason
       let isEnabled = route.availability.isEnabled
+      let isPinned = isRoutePinned(route.id)
       let isSelected = selectedRouteID == route.id
       let shortcutLabel = route.shortcut?.displayLabel
 
@@ -803,6 +864,7 @@
         systemImage: route.systemImage,
         isProminent: route.isProminent,
         isEnabled: isEnabled,
+        isPinned: isPinned,
         isSelected: isSelected,
         disabledReason: disabledReason,
         accessibilityIdentifier: MacWorkspaceAccessibility.routeIdentifier(route.id),
@@ -861,8 +923,16 @@
 
     @ViewBuilder
     private func routeSceneContextMenu(for route: WorkspaceRouteDescriptor<RouteID>) -> some View {
+      Button(isRoutePinned(route.id) ? "Unpin from Sidebar" : "Pin to Sidebar") {
+        onTogglePin(route.id)
+      }
+      .accessibilityIdentifier(
+        "\(MacWorkspaceAccessibility.routeIdentifier(route.id))-pin-toggle"
+      )
+
       let opensInSeparateScene = route.scenePresentation.opensInSeparateScene
       if opensInSeparateScene {
+        Divider()
         Button("Open in New Window") {
           onOpenScene(route.id)
         }
@@ -887,6 +957,7 @@
     let disabledReason: String?
     let isEnabled: Bool
     let isProminent: Bool
+    let isPinned: Bool
     let isSelected: Bool
     let onTap: () -> Void
     let accessibilityIdentifier: String
@@ -905,6 +976,7 @@
       systemImage: String,
       isProminent: Bool = false,
       isEnabled: Bool = true,
+      isPinned: Bool = false,
       isSelected: Bool = false,
       disabledReason: String? = nil,
       accessibilityIdentifier: String,
@@ -916,6 +988,7 @@
       self.disabledReason = disabledReason
       self.isEnabled = isEnabled
       self.isProminent = isProminent
+      self.isPinned = isPinned
       self.isSelected = isSelected
       self.onTap = onTap
       self.accessibilityIdentifier = accessibilityIdentifier
@@ -947,6 +1020,13 @@
 
           if let badge {
             MacWorkspaceBadge(badge, theme: theme)
+          }
+
+          if isPinned {
+            Image(systemName: "pin.fill")
+              .font(.system(size: 10, weight: .semibold))
+              .foregroundStyle(theme.subtleText)
+              .accessibilityHidden(true)
           }
 
           if let shortcutLabel {
@@ -981,6 +1061,7 @@
       [
         subtitle,
         badge,
+        isPinned ? "Pinned" : nil,
         shortcutLabel,
         disabledReason,
       ]
@@ -1004,6 +1085,7 @@
     @Binding var isInspectorPresented: Bool
     @Binding var isSidebarVisible: Bool
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.macWorkspaceDensityMetrics) private var metrics
 
     let detail: (WorkspaceRouteDescriptor<RouteID>) -> DetailContent
     let fullWidth: (WorkspaceRouteDescriptor<RouteID>) -> FullWidthContent
@@ -1104,7 +1186,19 @@
 
     private func contentBody(_ route: WorkspaceRouteDescriptor<RouteID>) -> some View {
       HStack(spacing: 0) {
-        if prefersSinglePaneContent {
+        if !route.contentState.isReady {
+          WorkspaceShellRouteStatusView(
+            contentState: route.contentState,
+            palette: workspacePalette,
+            metrics: workspaceStatusMetrics
+          )
+          .frame(width: mainWidth)
+          .frame(maxHeight: .infinity)
+          .background(contentSurface)
+          .accessibilityIdentifier(
+            "mac-workspace-route-status-\(MacWorkspaceAccessibility.identifierComponent(route.id))"
+          )
+        } else if prefersSinglePaneContent {
           detail(route)
             .frame(width: mainWidth)
             .frame(maxHeight: .infinity)
@@ -1194,6 +1288,28 @@
 
     private var contentSurface: Color {
       theme.canvas
+    }
+
+    private var workspacePalette: WorkspaceShellPalette {
+      WorkspaceShellPalette(
+        accent: .accentColor,
+        fill: theme.fill,
+        primaryText: theme.strongText,
+        secondaryText: theme.mutedText,
+        subtleText: theme.subtleText
+      )
+    }
+
+    private var workspaceStatusMetrics: WorkspaceShellMetrics {
+      WorkspaceShellMetrics(
+        badgeFontSize: metrics.badgeFont,
+        controlCornerRadius: metrics.rowCornerRadius,
+        keycapFontSize: metrics.keycapFont,
+        statusIconContainerSize: metrics.emptyStateIconContainer,
+        statusIconFontSize: metrics.emptyStateIconFont,
+        statusMessageFontSize: 13,
+        statusTitleFontSize: metrics.emptyStateTitleFont
+      )
     }
 
     private var inspectorPane: some View {
@@ -1550,12 +1666,28 @@
               ForEach(store.filteredCommands) { command in
                 MacWorkspaceCommandRow(
                   command: command,
+                  isRoutePinned: { store.pinnedRouteIDs.contains($0) },
                   isSelected: command.id == store.selectedCommandID,
                   onFocus: {
                     store.send(.commandPaletteSelectionChanged(command.id))
                   },
+                  onOpenRoute: { id in
+                    store.send(.routeSelected(id))
+                  },
+                  onOpenScene: { id in
+                    store.send(.sceneRequested(id))
+                  },
                   onSelect: {
                     store.send(.commandPaletteCommandSelected(command.id))
+                  },
+                  onTogglePin: { id in
+                    store.send(.routePinToggled(id))
+                  },
+                  route: { id in
+                    store.navigation.sections
+                      .lazy
+                      .flatMap(\.routes)
+                      .first { $0.id == id }
                   },
                   theme: theme
                 )
@@ -1588,9 +1720,14 @@
     @State private var isHovered = false
 
     let command: WorkspaceCommand<RouteID>
+    let isRoutePinned: (RouteID) -> Bool
     let isSelected: Bool
     let onFocus: () -> Void
+    let onOpenRoute: (RouteID) -> Void
+    let onOpenScene: (RouteID) -> Void
     let onSelect: () -> Void
+    let onTogglePin: (RouteID) -> Void
+    let route: (RouteID) -> WorkspaceRouteDescriptor<RouteID>?
     let theme: MacWorkspaceShellTheme
 
     var body: some View {
@@ -1638,6 +1775,9 @@
       }
       .buttonStyle(.plain)
       .disabled(!command.isEnabled)
+      .contextMenu {
+        commandContextMenu
+      }
       .onHover { hovered in
         isHovered = hovered
         if hovered {
@@ -1649,6 +1789,38 @@
       .accessibilityHint(command.isEnabled ? "Runs command" : command.disabledReason ?? "Command unavailable")
       .accessibilityIdentifier(MacWorkspaceAccessibility.commandPaletteRowIdentifier(command.id))
       .macWorkspaceSelectedAccessibility(isSelected)
+    }
+
+    @ViewBuilder
+    private var commandContextMenu: some View {
+      switch command.target {
+      case .route(let routeID):
+        Button(isRoutePinned(routeID) ? "Unpin from Sidebar" : "Pin to Sidebar") {
+          onTogglePin(routeID)
+        }
+
+        if route(routeID)?.scenePresentation.opensInSeparateScene == true {
+          Button("Open in New Window") {
+            onOpenScene(routeID)
+          }
+        }
+
+      case .scene(let routeID):
+        Button("Open Route") {
+          onOpenRoute(routeID)
+        }
+
+        Button(isRoutePinned(routeID) ? "Unpin from Sidebar" : "Pin to Sidebar") {
+          onTogglePin(routeID)
+        }
+
+        Button("Open in New Window") {
+          onOpenScene(routeID)
+        }
+
+      default:
+        EmptyView()
+      }
     }
 
     private var rowBackground: Color {

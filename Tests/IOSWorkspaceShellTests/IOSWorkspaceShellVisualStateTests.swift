@@ -17,7 +17,9 @@ func compactIOSShellVisualStateMatchesFixture() throws {
       workspace: WorkspaceRestoration(
         selectedRouteID: VisualRoute.inbox,
         collapsedSectionIDs: [],
-        recentCommandIDs: [.appAction("refresh-workspace")]
+        pinnedRouteIDs: [.inbox],
+        recentCommandIDs: [.appAction("refresh-workspace")],
+        recentRouteIDs: [.settings, .inbox]
       ),
       columnPreference: .content,
       compactNavigationPath: [.inbox]
@@ -38,7 +40,9 @@ func splitIOSShellVisualStateMatchesFixture() throws {
       workspace: WorkspaceRestoration(
         selectedRouteID: VisualRoute.settings,
         collapsedSectionIDs: ["workspace"],
-        recentCommandIDs: [.scene(.settings), .route(.inbox)]
+        pinnedRouteIDs: [.settings],
+        recentCommandIDs: [.scene(.settings), .route(.inbox)],
+        recentRouteIDs: [.inbox, .settings]
       ),
       columnPreference: .sidebar,
       compactNavigationPath: []
@@ -104,6 +108,14 @@ private struct IOSShellVisualStateDescriptor<RouteID: Hashable & Sendable> {
         lines.append("  - \(routeLine(route))")
       }
     }
+    lines.append("pinned-routes:")
+    for routeID in restoration.workspace.pinnedRouteIDs {
+      lines.append("- \(routeName(routeID))")
+    }
+    lines.append("recent-routes:")
+    for routeID in recentRouteIDsExcludingPinned {
+      lines.append("- \(routeName(routeID))")
+    }
     lines.append("command-sections:")
     for section in WorkspaceCommandSections.make(
       for: commands,
@@ -148,11 +160,15 @@ private struct IOSShellVisualStateDescriptor<RouteID: Hashable & Sendable> {
       "ios-workspace-route-list",
       "ios-workspace-command-search-button",
       "ios-workspace-clear-recent-commands-button",
+      "ios-workspace-clear-recent-routes-button",
     ]
 
     if let selectedRoute {
       anchors.append("ios-workspace-route-\(identifierComponent(routeName(selectedRoute.id)))")
       anchors.append("ios-workspace-detail-\(identifierComponent(routeName(selectedRoute.id)))")
+      if !selectedRoute.contentState.isReady {
+        anchors.append("ios-workspace-route-status-\(identifierComponent(routeName(selectedRoute.id)))")
+      }
       if selectedRoute.scenePresentation.opensInSeparateScene {
         anchors.append("ios-workspace-open-scene-\(identifierComponent(routeName(selectedRoute.id)))")
       }
@@ -183,6 +199,7 @@ private struct IOSShellVisualStateDescriptor<RouteID: Hashable & Sendable> {
       route.id == restoration.workspace.selectedRouteID ? "selected" : "unselected",
       route.availability.isEnabled ? "enabled" : "disabled",
       "badge=\(route.badge.map(String.init) ?? "none")",
+      "state=\(contentStateName(route.contentState))",
       "shortcut=\(route.shortcut?.displayLabel ?? "none")",
       "presentation=\(route.presentation.rawValue)",
       "scene=\(route.scenePresentation.kind.rawValue)",
@@ -208,6 +225,8 @@ private struct IOSShellVisualStateDescriptor<RouteID: Hashable & Sendable> {
     ]
 
     switch route?.presentation {
+    case _ where route?.contentState.isReady == false:
+      surfaces.append("route-status-\(contentStateName(route?.contentState ?? .ready))")
     case .listDetail:
       surfaces.append("detail")
     case .fullWidth:
@@ -221,6 +240,26 @@ private struct IOSShellVisualStateDescriptor<RouteID: Hashable & Sendable> {
     }
 
     return surfaces
+  }
+
+  private var recentRouteIDsExcludingPinned: [RouteID] {
+    let pinnedRouteIDs = Set(restoration.workspace.pinnedRouteIDs)
+    return restoration.workspace.recentRouteIDs.filter { routeID in
+      !pinnedRouteIDs.contains(routeID)
+    }
+  }
+
+  private func contentStateName(_ contentState: WorkspaceRouteContentState) -> String {
+    switch contentState {
+    case .ready:
+      "ready"
+    case .loading:
+      "loading"
+    case .empty:
+      "empty"
+    case .error:
+      "error"
+    }
   }
 
   private func commandID(_ id: WorkspaceCommandIdentifier<RouteID>) -> String {
@@ -315,6 +354,11 @@ private extension WorkspaceNavigationRegistry where RouteID == VisualRoute {
             id: .settings,
             title: "Settings",
             systemImage: "gearshape",
+            contentState: .empty(
+              title: "No Settings Changes",
+              message: "Workspace preferences are already current.",
+              systemImage: "gearshape"
+            ),
             keywords: ["preferences"],
             shortcut: WorkspaceKeyboardShortcut(
               key: ",",

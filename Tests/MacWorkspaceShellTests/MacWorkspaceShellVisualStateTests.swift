@@ -18,7 +18,9 @@
         workspace: WorkspaceRestoration(
           selectedRouteID: VisualRoute.settings,
           collapsedSectionIDs: ["workspace"],
-          recentCommandIDs: [.scene(.settings), .route(.inbox)]
+          pinnedRouteIDs: [.settings],
+          recentCommandIDs: [.scene(.settings), .route(.inbox)],
+          recentRouteIDs: [.inbox, .settings]
         ),
         isSidebarVisible: false,
         isInspectorPresented: true,
@@ -90,6 +92,14 @@
           lines.append("  - \(routeLine(route))")
         }
       }
+      lines.append("pinned-routes:")
+      for routeID in restoration.workspace.pinnedRouteIDs {
+        lines.append("- \(routeName(routeID))")
+      }
+      lines.append("recent-routes:")
+      for routeID in recentRouteIDsExcludingPinned {
+        lines.append("- \(routeName(routeID))")
+      }
       lines.append("command-sections:")
       for section in WorkspaceCommandSections.make(
         for: commands,
@@ -150,8 +160,19 @@
         "mac-workspace-sidebar-toggle-button",
       ]
 
+      if !restoration.workspace.pinnedRouteIDs.isEmpty {
+        anchors.append("mac-workspace-sidebar-section-workspace-pinned-routes")
+      }
+
+      if !recentRouteIDsExcludingPinned.isEmpty {
+        anchors.append("mac-workspace-sidebar-section-workspace-recent-routes")
+      }
+
       if let selectedRoute {
         anchors.append("mac-workspace-route-\(identifierComponent(routeName(selectedRoute.id)))")
+        if !selectedRoute.contentState.isReady {
+          anchors.append("mac-workspace-route-status-\(identifierComponent(routeName(selectedRoute.id)))")
+        }
       }
 
       if restoration.isInspectorPresented {
@@ -186,6 +207,14 @@
       }
       panes.append("header")
 
+      if let route, !route.contentState.isReady {
+        panes.append("route-status-\(contentStateName(route.contentState))")
+        if restoration.isInspectorPresented {
+          panes.append("inspector")
+        }
+        return panes
+      }
+
       switch route?.presentation {
       case .listDetail:
         panes.append("list")
@@ -210,6 +239,7 @@
         route.id == restoration.workspace.selectedRouteID ? "selected" : "unselected",
         route.availability.isEnabled ? "enabled" : "disabled",
         "badge=\(route.badge.map(String.init) ?? "none")",
+        "state=\(contentStateName(route.contentState))",
         "shortcut=\(route.shortcut?.displayLabel ?? "none")",
         "presentation=\(route.presentation.rawValue)",
         "scene=\(route.scenePresentation.kind.rawValue)",
@@ -222,6 +252,26 @@
         .lazy
         .flatMap(\.routes)
         .first { $0.id == id }
+    }
+
+    private var recentRouteIDsExcludingPinned: [RouteID] {
+      let pinnedRouteIDs = Set(restoration.workspace.pinnedRouteIDs)
+      return restoration.workspace.recentRouteIDs.filter { routeID in
+        !pinnedRouteIDs.contains(routeID)
+      }
+    }
+
+    private func contentStateName(_ contentState: WorkspaceRouteContentState) -> String {
+      switch contentState {
+      case .ready:
+        "ready"
+      case .loading:
+        "loading"
+      case .empty:
+        "empty"
+      case .error:
+        "error"
+      }
     }
 
     private func commandID(_ id: WorkspaceCommandIdentifier<RouteID>) -> String {
@@ -320,6 +370,11 @@
               id: .settings,
               title: "Settings",
               systemImage: "gearshape",
+              contentState: .empty(
+                title: "No Settings Changes",
+                message: "Workspace preferences are already current.",
+                systemImage: "gearshape"
+              ),
               keywords: ["preferences"],
               shortcut: WorkspaceKeyboardShortcut(
                 key: ",",

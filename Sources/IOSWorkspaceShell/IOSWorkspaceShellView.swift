@@ -2,6 +2,7 @@
   import ComposableArchitecture
   import SwiftUI
   import WorkspaceCore
+  import WorkspaceShellDesignSystem
   import WorkspaceTCA
 
   private enum IOSWorkspaceCommandSearchFocusField: Hashable {
@@ -144,6 +145,14 @@
         }
         .disabled(store.recentCommandIDs.isEmpty)
         .accessibilityIdentifier("ios-workspace-clear-recent-commands-button")
+
+        Button {
+          store.send(.recentRoutesCleared)
+        } label: {
+          Label("Clear Recent Routes", systemImage: "clock.badge.xmark")
+        }
+        .disabled(store.recentRouteIDs.isEmpty)
+        .accessibilityIdentifier("ios-workspace-clear-recent-routes-button")
       }
     }
 
@@ -191,31 +200,21 @@
 
     private var routeList: some View {
       List {
+        if !store.pinnedRoutes.isEmpty {
+          Section("Pinned") {
+            routeRows(store.pinnedRoutes)
+          }
+        }
+
+        if !recentRoutesExcludingPinned.isEmpty {
+          Section("Recent") {
+            routeRows(recentRoutesExcludingPinned)
+          }
+        }
+
         ForEach(store.visibleSections) { section in
           Section(section.title) {
-            ForEach(section.routes) { route in
-              Button {
-                select(route)
-              } label: {
-                IOSWorkspaceRouteRow(
-                  route: route,
-                  isSelected: store.selectedRouteID == route.id,
-                  prefersBadges: configuration.prefersBadges
-                )
-              }
-              .disabled(!route.availability.isEnabled)
-              .accessibilityIdentifier(IOSWorkspaceAccessibility.routeIdentifier(route.id))
-              .contextMenu {
-                if route.scenePresentation.opensInSeparateScene {
-                  Button("Open in New Window") {
-                    store.send(.sceneRequested(route.id))
-                  }
-                  .accessibilityIdentifier(
-                    IOSWorkspaceAccessibility.sceneButtonIdentifier(route.id)
-                  )
-                }
-              }
-            }
+            routeRows(section.routes)
           }
         }
       }
@@ -228,7 +227,7 @@
     private func detail(
       for route: WorkspaceRouteDescriptor<RouteID>?
     ) -> some View {
-      content(route)
+      detailContent(for: route)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .toolbar {
           if usesStackNavigation {
@@ -243,8 +242,75 @@
         )
     }
 
+    @ViewBuilder
+    private func detailContent(
+      for route: WorkspaceRouteDescriptor<RouteID>?
+    ) -> some View {
+      if let route, !route.contentState.isReady {
+        WorkspaceShellRouteStatusView(
+          contentState: route.contentState,
+          palette: WorkspaceShellPalette()
+        )
+        .accessibilityIdentifier(
+          "ios-workspace-route-status-\(IOSWorkspaceAccessibility.identifierComponent(String(describing: route.id)))"
+        )
+      } else {
+        content(route)
+      }
+    }
+
+    @ViewBuilder
+    private func routeRows(
+      _ routes: [WorkspaceRouteDescriptor<RouteID>]
+    ) -> some View {
+      ForEach(routes) { route in
+        Button {
+          select(route)
+        } label: {
+          IOSWorkspaceRouteRow(
+            route: route,
+            isPinned: store.pinnedRouteIDs.contains(route.id),
+            isSelected: store.selectedRouteID == route.id,
+            prefersBadges: configuration.prefersBadges
+          )
+        }
+        .disabled(!route.availability.isEnabled)
+        .accessibilityIdentifier(IOSWorkspaceAccessibility.routeIdentifier(route.id))
+        .contextMenu {
+          routeContextMenu(for: route)
+        }
+      }
+    }
+
+    @ViewBuilder
+    private func routeContextMenu(
+      for route: WorkspaceRouteDescriptor<RouteID>
+    ) -> some View {
+      Button(store.pinnedRouteIDs.contains(route.id) ? "Unpin from Sidebar" : "Pin to Sidebar") {
+        store.send(.routePinToggled(route.id))
+      }
+      .accessibilityIdentifier(
+        "\(IOSWorkspaceAccessibility.routeIdentifier(route.id))-pin-toggle"
+      )
+
+      if route.scenePresentation.opensInSeparateScene {
+        Button("Open in New Window") {
+          store.send(.sceneRequested(route.id))
+        }
+        .accessibilityIdentifier(
+          IOSWorkspaceAccessibility.sceneButtonIdentifier(route.id)
+        )
+      }
+    }
+
     private var usesStackNavigation: Bool {
       configuration.usesStackNavigation(isCompactWidth: horizontalSizeClass == .compact)
+    }
+
+    private var recentRoutesExcludingPinned: [WorkspaceRouteDescriptor<RouteID>] {
+      store.recentRoutes.filter { route in
+        !store.pinnedRouteIDs.contains(route.id)
+      }
     }
 
     private func select(_ route: WorkspaceRouteDescriptor<RouteID>) {
@@ -270,6 +336,7 @@
 
   private struct IOSWorkspaceRouteRow<RouteID: Hashable & Sendable>: View {
     let route: WorkspaceRouteDescriptor<RouteID>
+    let isPinned: Bool
     let isSelected: Bool
     let prefersBadges: Bool
 
@@ -297,8 +364,16 @@
             .font(.caption.monospacedDigit())
             .foregroundStyle(.secondary)
         }
+
+        if isPinned {
+          Image(systemName: "pin.fill")
+            .font(.caption)
+            .foregroundStyle(.secondary)
+            .accessibilityHidden(true)
+        }
       }
       .contentShape(Rectangle())
+      .accessibilityValue(isPinned ? "Pinned" : "")
     }
   }
 
@@ -351,6 +426,9 @@
                   )
                 }
                 .disabled(!command.isEnabled)
+                .contextMenu {
+                  commandContextMenu(for: command)
+                }
                 .accessibilityHint(
                   command.isEnabled
                   ? "Runs the selected workspace command."
@@ -398,6 +476,42 @@
       }
       .accessibilityElement(children: .contain)
       .accessibilityIdentifier("ios-workspace-command-search")
+    }
+
+    @ViewBuilder
+    private func commandContextMenu(
+      for command: WorkspaceCommand<RouteID>
+    ) -> some View {
+      switch command.target {
+      case .route(let routeID), .scene(let routeID):
+        Button(store.pinnedRouteIDs.contains(routeID) ? "Unpin from Sidebar" : "Pin to Sidebar") {
+          store.send(.routePinToggled(routeID))
+        }
+
+        if case .scene = command.target {
+          Button("Open Route") {
+            store.send(.routeSelected(routeID))
+          }
+        }
+
+        if route(for: routeID)?.scenePresentation.opensInSeparateScene == true {
+          Button("Open in New Window") {
+            store.send(.sceneRequested(routeID))
+          }
+        }
+
+      default:
+        EmptyView()
+      }
+    }
+
+    private func route(
+      for routeID: RouteID
+    ) -> WorkspaceRouteDescriptor<RouteID>? {
+      store.navigation.sections
+        .lazy
+        .flatMap(\.routes)
+        .first { $0.id == routeID }
     }
 
     private func focusSearchField() {
