@@ -30,6 +30,36 @@ run_step() {
   "$@"
 }
 
+clean_xcode_derived_data_bucket() {
+  local path="$1"
+
+  if [[ -z "$path" || "$path" == "/" ]]; then
+    echo "error: refusing to clean invalid derived data path: $path" >&2
+    exit 1
+  fi
+
+  rm -rf "$path"
+  mkdir -p "$path"
+}
+
+clean_xcode_derived_data() {
+  clean_xcode_derived_data_bucket "$DERIVED_DATA/mac"
+  clean_xcode_derived_data_bucket "$DERIVED_DATA/minimal-mac"
+
+  if [[ "$BUILD_IOS" == "1" ]]; then
+    clean_xcode_derived_data_bucket "$DERIVED_DATA/ios"
+    clean_xcode_derived_data_bucket "$DERIVED_DATA/minimal-ios"
+  fi
+
+  if [[ "$RUN_UI_TESTS" == "1" ]]; then
+    clean_xcode_derived_data_bucket "$DERIVED_DATA/mac-ui-tests"
+
+    if [[ "$BUILD_IOS" == "1" ]]; then
+      clean_xcode_derived_data_bucket "$DERIVED_DATA/ios-ui-tests"
+    fi
+  fi
+}
+
 default_ios_test_destination() {
   local requested_name="$1"
 
@@ -82,8 +112,14 @@ run_step "Run documentation checks" \
 run_step "Run package tests" \
   swift test --package-path "$PROJECT_ROOT"
 
+run_step "Clean custom renderer example build cache" \
+  swift package --package-path "$PROJECT_ROOT/Examples/CustomRendererClient" clean
+
 run_step "Run custom renderer example tests" \
   swift test --package-path "$PROJECT_ROOT/Examples/CustomRendererClient"
+
+run_step "Clean Xcode derived data" \
+  clean_xcode_derived_data
 
 run_step "Generate Xcode project" \
   xcodegen generate --spec "$PROJECT_ROOT/project.yml"

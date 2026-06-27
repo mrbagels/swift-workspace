@@ -1,6 +1,6 @@
 # Verification
 
-Last updated: 2026-06-25
+Last updated: 2026-06-27
 
 ## Fast Checks
 
@@ -20,9 +20,12 @@ The full script:
 1. runs the doctor,
 2. runs documentation checks,
 3. runs package tests,
-4. generates the Xcode project,
-5. builds the macOS demo,
-6. builds the minimal macOS starter app.
+4. cleans the custom renderer example SwiftPM build cache,
+5. runs custom renderer example tests,
+6. cleans the Xcode derived data buckets owned by the verifier,
+7. generates the Xcode project,
+8. builds the macOS demo,
+9. builds the minimal macOS starter app.
 
 Set `VERIFY_BUILD_IOS=1` to also build the iOS demo and minimal iOS starter app:
 
@@ -49,6 +52,11 @@ the first available simulator whose name matches or starts with
 `VERIFY_IOS_TEST_DEVICE`, which defaults to `iPhone 17 Pro`. The script passes
 the resolved simulator UUID to `xcodebuild` so runtimes named like
 `iPhone 17 Pro (26.5)` still work.
+
+The verifier clears its own Xcode derived data buckets before generated-project
+builds. This avoids stale SwiftSyntax macro prebuilts after Xcode or toolchain
+changes. Override `VERIFY_DERIVED_DATA` only when you want those disposable
+build products somewhere other than `/tmp/swift-workspace-derived-data`.
 
 ## Example Checks
 

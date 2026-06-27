@@ -11,6 +11,15 @@
       }
     },
     {
+      "identity" : "comet",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/mrbagels/comet",
+      "state" : {
+        "revision" : "fafc9e72ad23d823e7b77fb0405d9da11d0371ff",
+        "version" : "0.1.0"
+      }
+    },
+    {
       "identity" : "grdb.swift",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/groue/GRDB.swift",
@@ -89,6 +98,15 @@
       "state" : {
         "revision" : "8dc1fbf2f6255a73dec53b4648164884898db4c5",
         "version" : "1.14.1"
+      }
+    },
+    {
+      "identity" : "swift-http-types",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-http-types",
+      "state" : {
+        "revision" : "db774a277f60063a32d854f2980299caf06da041",
+        "version" : "1.6.0"
       }
     },
     {

@@ -1,53 +1,85 @@
+<div align="center">
+
 # swift-workspace
 
-[![Swift](https://img.shields.io/badge/Swift-6.2-orange.svg)](https://swift.org)
-[![Platforms](https://img.shields.io/badge/platforms-macOS%2026%20%7C%20iOS%2026-blue.svg)](Package.swift)
-[![Version](https://img.shields.io/badge/version-0.1.0-6E56CF.svg)](docs/operations/release-checklist.md)
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![TCA](https://img.shields.io/badge/TCA-ready-111827.svg)](https://github.com/pointfreeco/swift-composable-architecture)
-[![iCloud](https://img.shields.io/badge/storage-iCloud%20primary-0A84FF.svg)](docs/adoption/cloudkit.md)
-[![Comet](https://img.shields.io/badge/server%20client-Comet%20optional-7C3AED.svg)](docs/features/server-side-companion.md)
+<p>
+  <strong>A reusable Swift workspace engine for Mac, iPhone, and iPad apps.</strong>
+</p>
 
-Reusable Swift workspace engine, platform shells, persistence contracts, and
-optional companion integrations for apps that need polished navigation,
-commands, restoration, scenes, and automation without tying those mechanics to a
-single product.
+<p>
+  Typed navigation, commands, restoration, platform shells, persistence adapters,
+  automation descriptors, and optional companion server calls without tying your
+  app to one renderer or storage backend.
+</p>
 
-`swift-workspace` is designed to be adopted in pieces. Use the pure engine,
-bring the TCA reducer, ship the bundled Mac or iOS shells, build your own
-renderer, or add optional storage, automation, and server products only when
-your app needs them.
+<p>
+  <a href="https://github.com/mrbagels/swift-workspace/actions/workflows/swift-workspace.yml">
+    <img alt="CI" src="https://img.shields.io/github/actions/workflow/status/mrbagels/swift-workspace/swift-workspace.yml?branch=master&label=CI&style=for-the-badge">
+  </a>
+  <a href="https://swift.org">
+    <img alt="Swift 6.2" src="https://img.shields.io/badge/Swift-6.2-F05138?style=for-the-badge&logo=swift&logoColor=white">
+  </a>
+  <a href="Package.swift">
+    <img alt="Swift Package Manager" src="https://img.shields.io/badge/SPM-ready-111827?style=for-the-badge&logo=swift&logoColor=white">
+  </a>
+  <a href="LICENSE">
+    <img alt="License MIT" src="https://img.shields.io/badge/license-MIT-2EA44F?style=for-the-badge">
+  </a>
+</p>
 
-## Why It Exists
+<p>
+  <a href="Package.swift">
+    <img alt="Platforms" src="https://img.shields.io/badge/platforms-macOS%2026%20%7C%20iOS%2026-0A84FF?style=flat-square">
+  </a>
+  <a href="docs/operations/release-checklist.md">
+    <img alt="Version 0.1.0" src="https://img.shields.io/badge/version-0.1.0-6E56CF?style=flat-square">
+  </a>
+  <a href="https://github.com/pointfreeco/swift-composable-architecture">
+    <img alt="TCA ready" src="https://img.shields.io/badge/TCA-ready-111827?style=flat-square">
+  </a>
+  <a href="docs/adoption/cloudkit.md">
+    <img alt="iCloud primary" src="https://img.shields.io/badge/storage-iCloud%20primary-0A84FF?style=flat-square">
+  </a>
+  <a href="docs/features/server-side-companion.md">
+    <img alt="Comet optional" src="https://img.shields.io/badge/server-Comet%20optional-7C3AED?style=flat-square">
+  </a>
+  <a href="Sources/WorkspaceEngine/WorkspaceEngine.docc/WorkspaceEngine.md">
+    <img alt="DocC" src="https://img.shields.io/badge/docs-DocC-0B6BFF?style=flat-square">
+  </a>
+</p>
 
-Modern productivity apps usually rebuild the same infrastructure:
+<p>
+  <a href="#install">Install</a> |
+  <a href="#choose-your-path">Choose your path</a> |
+  <a href="#quick-start">Quick start</a> |
+  <a href="#architecture">Architecture</a> |
+  <a href="#develop">Develop</a>
+</p>
 
-- typed route registries,
-- sidebar and split navigation,
-- command palettes and native menus,
-- keyboard shortcuts,
-- route restoration,
-- scene/window handoff,
-- iCloud-aware persistence contracts,
-- accessibility fixtures,
-- optional server workflows,
-- system automation entry points.
+</div>
 
-This package makes that infrastructure shared, testable, and app-agnostic. Your
-app still owns domain state, documents, iCloud containers, server decisions,
-analytics, and product-specific UI.
+## Why This Exists
 
-## What You Get
+Productivity apps repeatedly rebuild the same foundation: route registries,
+sidebars, split navigation, command palettes, native menus, keyboard shortcuts,
+scene handoff, restoration, iCloud-aware persistence, automation entry points,
+and server companion hooks.
 
-| Area | Included |
+`swift-workspace` makes that foundation shared, typed, testable, and
+app-agnostic. Your app still owns domain state, documents, iCloud containers,
+analytics, server decisions, and product-specific UI.
+
+## What Ships
+
+| Layer | What it gives you |
 | --- | --- |
-| Engine | Typed routes, commands, scenes, search, policy, diagnostics, restoration, pins, recents, route states. |
-| Reducer | `WorkspaceFeature`, shared TCA behavior, delegate effects, command execution, route opening, registry reconciliation. |
-| Shells | Custom macOS shell, adaptive iOS and iPadOS shell, command search, visual fixtures, accessibility anchors. |
-| Design System | Reusable SwiftUI primitives for badges, keycaps, section labels, and route status states. |
-| Persistence | JSON, UserDefaults, file persistence, SQLiteData codecs, CloudKit contracts. |
-| Automation | Serializable command catalog, App Intent handoff payloads, shortcut descriptors. |
-| Server | Optional Comet-backed typed client for entitlements, templates, jobs, diagnostics, and health. |
+| Engine | Typed routes, commands, scenes, search, policy, diagnostics, restoration, pins, recents, and route states. |
+| Reducer | `WorkspaceFeature`, shared TCA behavior, delegate effects, command execution, route opening, and registry reconciliation. |
+| Shells | Custom macOS shell plus adaptive iPhone and iPad shells with command search, accessibility anchors, and visual fixtures. |
+| Design system | Shared SwiftUI primitives for badges, keycaps, section labels, and route status states. |
+| Persistence | JSON, UserDefaults, file storage, SQLiteData codecs, CloudKit contracts, and conflict policy values. |
+| Automation | Serializable command catalog, shortcut descriptors, and App Intent handoff payloads. |
+| Server | Optional Comet-backed client for health, entitlements, templates, jobs, and diagnostics. |
 
 ## Install
 
@@ -69,40 +101,37 @@ Then import only the products you need:
 .product(name: "IOSWorkspaceShell", package: "swift-workspace")
 ```
 
-## Choose A Path
+## Choose Your Path
 
-| If you want | Start with |
-| --- | --- |
-| Pure route, command, scene, and restoration models | `WorkspaceCore` |
-| Shared reducer behavior with app-owned effects | `WorkspaceTCA` |
-| A batteries-included engine import | `WorkspaceEngine` |
-| A polished custom macOS shell | `MacWorkspaceShell` |
-| A native-feeling iPhone and iPad shell | `IOSWorkspaceShell` |
-| A fully custom renderer | `WorkspaceCore` plus `WorkspaceTCA` |
-| Small restoration storage | `WorkspacePersistence` |
-| SQLiteData records and codecs | `WorkspaceSQLiteData` |
-| iCloud contracts and conflict policies | `WorkspaceCloudKit` |
-| Shared shell UI primitives | `WorkspaceShellDesignSystem` |
-| Shortcuts, App Intents, widgets, or controls | `WorkspaceAutomationBridge` |
-| Thin companion server calls | `WorkspaceServerClient` |
+| Goal | Start here | Add later |
+| --- | --- | --- |
+| Share typed navigation and commands | `WorkspaceCore` | `WorkspaceTCA` |
+| Use the shared reducer in a TCA app | `WorkspaceTCA` | Platform shell products |
+| Ship the bundled Mac shell | `MacWorkspaceShell` | `WorkspacePersistence`, `WorkspaceSQLiteData`, `WorkspaceCloudKit` |
+| Ship iPhone and iPad shells | `IOSWorkspaceShell` | `WorkspaceAutomationBridge` |
+| Build a fully custom renderer | `WorkspaceCore` plus `WorkspaceTCA` | `WorkspaceShellDesignSystem` |
+| Add lightweight restoration | `WorkspacePersistence` | `WorkspaceSQLiteData` |
+| Keep iCloud primary | `WorkspaceCloudKit` | App-owned CloudKit adapters |
+| Expose Shortcuts or App Intents | `WorkspaceAutomationBridge` | Host app `AppIntent` types |
+| Call a companion service | `WorkspaceServerClient` | Your Comet release and server workflow |
 
 ## Product Map
 
 | Product | Purpose |
 | --- | --- |
 | `WorkspaceCore` | Pure Swift route, command, scene, search, diagnostics, policy, state, and restoration vocabulary. |
-| `WorkspaceTCA` | Platform-neutral TCA reducer for route selection, commands, command palette, scenes, pins, recents, and restoration. |
-| `WorkspaceEngine` | Convenience umbrella that re-exports core engine products and TCA. |
+| `WorkspaceTCA` | Platform-neutral reducer for route selection, command search, scenes, pins, recents, and restoration. |
+| `WorkspaceEngine` | Convenience umbrella for the core engine products and TCA integration. |
 | `WorkspacePersistence` | JSON, UserDefaults, and file-backed restoration helpers. |
 | `WorkspaceSQLiteData` | Optional SQLiteData records, migrations, codecs, and metadata mapping. |
 | `WorkspaceCloudKit` | Optional CloudKit record names, envelopes, conflict policies, and app-owned adapter contracts. |
 | `WorkspaceShellDesignSystem` | SwiftUI badges, keycaps, section labels, and route status views shared by renderers. |
 | `WorkspaceAutomationBridge` | Automation descriptors, shortcut metadata, and App Intent handoff payloads. |
 | `WorkspaceServerClient` | Optional Comet client for companion service contracts. |
-| `MacWorkspaceShell` | Custom macOS shell renderer with sidebar styles, command palette, menus, toolbar, inspector, and scenes. |
-| `IOSWorkspaceShell` | Adaptive iOS and iPadOS renderer with split/stack navigation, command search, pins, recents, and scene actions. |
+| `MacWorkspaceShell` | Custom macOS shell with sidebar styles, command palette, menus, toolbar, inspector, and scenes. |
+| `IOSWorkspaceShell` | Adaptive iOS and iPadOS renderer with stack or split navigation, command search, pins, recents, and scene actions. |
 
-## Core Example
+## Quick Start
 
 Define typed routes and a navigation registry:
 
@@ -196,9 +225,7 @@ struct AppFeature {
 }
 ```
 
-## Bundled Shells
-
-### macOS
+Render the bundled Mac shell:
 
 ```swift
 import MacWorkspaceShell
@@ -224,12 +251,7 @@ Install native menus from the same command registry:
 }
 ```
 
-The Mac shell is custom-only. It supports:
-
-- `.floating`: rounded inset navigation with split-view-like spacing.
-- `.edgeToEdge`: full-height website-style navigation.
-
-### iOS And iPadOS
+Render the bundled iOS and iPadOS shell:
 
 ```swift
 import IOSWorkspaceShell
@@ -245,13 +267,33 @@ IOSWorkspaceShellView(
 }
 ```
 
-The iOS shell resolves to stack navigation on compact widths and split
-navigation on regular widths. It includes command search, pins, recent routes,
-badges, shortcut labels, route status states, and iPad scene context actions.
+## Architecture
+
+```mermaid
+flowchart LR
+  App["Your app domain"] --> TCA["WorkspaceTCA"]
+  Core["WorkspaceCore"] --> TCA
+  TCA --> Mac["MacWorkspaceShell"]
+  TCA --> IOS["IOSWorkspaceShell"]
+  TCA --> Custom["Custom renderer"]
+  Core --> Persist["WorkspacePersistence"]
+  Core --> SQLite["WorkspaceSQLiteData"]
+  Core --> CloudKit["WorkspaceCloudKit"]
+  Core --> Automation["WorkspaceAutomationBridge"]
+  Core --> Server["WorkspaceServerClient"]
+  Design["WorkspaceShellDesignSystem"] --> Mac
+  Design --> IOS
+  Design --> Custom
+```
+
+Core and TCA stay platform-neutral. Platform shells consume the shared reducer,
+but they do not become the engine. Optional products remain optional so a
+consumer can adopt the pure engine without bringing in SQLiteData, CloudKit,
+Comet, AppKit, or UIKit.
 
 ## Custom Renderers
 
-You do not need to use the bundled shells. Custom clients can read directly from
+You do not need the bundled shells. Custom clients can read directly from
 `WorkspaceFeature.State`:
 
 - `visibleSections`
@@ -314,6 +356,25 @@ the command catalog remains shared.
 The server is a companion surface, not canonical storage. Keep documents,
 workspace restoration, and user-owned data local or iCloud-primary.
 
+## Examples And Docs
+
+| Resource | Link |
+| --- | --- |
+| macOS demo app | [`Apps/MacWorkspaceDemo`](Apps/MacWorkspaceDemo) |
+| iOS and iPadOS demo app | [`Apps/IOSWorkspaceDemo`](Apps/IOSWorkspaceDemo) |
+| Minimal Mac starter | [`Examples/MinimalMacWorkspaceApp`](Examples/MinimalMacWorkspaceApp) |
+| Minimal iOS starter | [`Examples/MinimalIOSWorkspaceApp`](Examples/MinimalIOSWorkspaceApp) |
+| Custom renderer package | [`Examples/CustomRendererClient`](Examples/CustomRendererClient) |
+| Mac shell quickstart | [`docs/adoption/mac-shell.md`](docs/adoption/mac-shell.md) |
+| iOS shell quickstart | [`docs/adoption/ios-shell.md`](docs/adoption/ios-shell.md) |
+| Engine-only quickstart | [`docs/adoption/engine-only.md`](docs/adoption/engine-only.md) |
+| Custom renderer guide | [`docs/adoption/custom-renderer.md`](docs/adoption/custom-renderer.md) |
+| Persistence guide | [`docs/adoption/persistence.md`](docs/adoption/persistence.md) |
+| CloudKit guide | [`docs/adoption/cloudkit.md`](docs/adoption/cloudkit.md) |
+| Automation guide | [`docs/adoption/automation.md`](docs/adoption/automation.md) |
+| Server client guide | [`docs/adoption/server-client.md`](docs/adoption/server-client.md) |
+| API stability review | [`docs/operations/api-stability-review-0.1.0.md`](docs/operations/api-stability-review-0.1.0.md) |
+
 ## Repository Layout
 
 ```text
@@ -332,17 +393,6 @@ docs/product                     Roadmap and phased implementation plan
 docs/technical                   Package map and implementation notes
 ```
 
-## Quickstarts
-
-- [Mac shell quickstart](docs/adoption/mac-shell.md)
-- [iOS shell quickstart](docs/adoption/ios-shell.md)
-- [Engine-only quickstart](docs/adoption/engine-only.md)
-- [Custom renderer quickstart](docs/adoption/custom-renderer.md)
-- [Persistence adapter guide](docs/adoption/persistence.md)
-- [CloudKit adoption guide](docs/adoption/cloudkit.md)
-- [Prototype migration guide](docs/adoption/prototype-migration.md)
-- [Server companion notes](docs/features/server-side-companion.md)
-
 ## Develop
 
 Generate the Xcode project:
@@ -357,7 +407,7 @@ Run package tests:
 swift test
 ```
 
-Run the local verification pass:
+Run the full local verification pass:
 
 ```sh
 scripts/doctor.sh
@@ -391,4 +441,4 @@ demos:
 
 ## License
 
-MIT. See [LICENSE](LICENSE).
+MIT. See [`LICENSE`](LICENSE).
