@@ -12,9 +12,11 @@ let package = Package(
     .library(name: "WorkspaceCore", targets: ["WorkspaceCore"]),
     .library(name: "WorkspaceTCA", targets: ["WorkspaceTCA"]),
     .library(name: "WorkspaceEngine", targets: ["WorkspaceEngine"]),
+    .library(name: "WorkspaceAutomationBridge", targets: ["WorkspaceAutomationBridge"]),
     .library(name: "WorkspacePersistence", targets: ["WorkspacePersistence"]),
     .library(name: "WorkspaceSQLiteData", targets: ["WorkspaceSQLiteData"]),
     .library(name: "WorkspaceCloudKit", targets: ["WorkspaceCloudKit"]),
+    .library(name: "WorkspaceServerClient", targets: ["WorkspaceServerClient"]),
     .library(name: "WorkspaceShellDesignSystem", targets: ["WorkspaceShellDesignSystem"]),
     .library(name: "MacWorkspaceShell", targets: ["MacWorkspaceShell"]),
     .library(name: "IOSWorkspaceShell", targets: ["IOSWorkspaceShell"]),
@@ -27,6 +29,10 @@ let package = Package(
     .package(
       url: "https://github.com/pointfreeco/sqlite-data",
       from: "1.0.0"
+    ),
+    .package(
+      url: "https://github.com/mrbagels/comet",
+      from: "0.1.0"
     ),
   ],
   targets: [
@@ -54,6 +60,12 @@ let package = Package(
       ]
     ),
     .target(
+      name: "WorkspaceAutomationBridge",
+      dependencies: [
+        "WorkspaceCore",
+      ]
+    ),
+    .target(
       name: "WorkspacePersistence",
       dependencies: [
         "WorkspaceCore",
@@ -76,6 +88,18 @@ let package = Package(
       name: "WorkspaceShellDesignSystem",
       dependencies: [
         "WorkspaceCore",
+      ]
+    ),
+    .target(
+      name: "WorkspaceServerClient",
+      dependencies: [
+        "WorkspaceCore",
+        .product(name: "Comet", package: "comet"),
+        .product(name: "CometTCA", package: "comet"),
+        .product(
+          name: "ComposableArchitecture",
+          package: "swift-composable-architecture"
+        ),
       ]
     ),
     .target(
@@ -121,6 +145,12 @@ let package = Package(
       ]
     ),
     .testTarget(
+      name: "WorkspaceAutomationBridgeTests",
+      dependencies: [
+        "WorkspaceAutomationBridge",
+      ]
+    ),
+    .testTarget(
       name: "MacWorkspaceShellTests",
       dependencies: [
         "MacWorkspaceShell",
@@ -148,6 +178,13 @@ let package = Package(
       name: "WorkspaceCloudKitTests",
       dependencies: [
         "WorkspaceCloudKit",
+      ]
+    ),
+    .testTarget(
+      name: "WorkspaceServerClientTests",
+      dependencies: [
+        "WorkspaceServerClient",
+        .product(name: "CometTesting", package: "comet"),
       ]
     ),
   ]
