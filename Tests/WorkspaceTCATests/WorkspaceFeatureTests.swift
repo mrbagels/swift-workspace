@@ -19,6 +19,7 @@ func routeSelectionUpdatesSelectedRouteAndEmitsDelegates() async {
   store.exhaustivity = .off
 
   await store.send(.routeSelected(.review)) {
+    $0.recentRouteIDs = [.review]
     $0.selectedRouteID = .review
   }
 }
@@ -191,6 +192,7 @@ func routeOpenRequestSelectsRouteAndSavesState() async {
     $0.collapsedSectionIDs = []
     $0.commandPaletteQuery = ""
     $0.isCommandPalettePresented = false
+    $0.recentRouteIDs = [.review]
     $0.selectedRouteID = .review
   }
   await store.receive(\.delegate)
@@ -306,6 +308,40 @@ func recentCommandsClearedRemovesHistoryAndEmitsRestorationDelegate() async {
 
 @MainActor
 @Test
+func routePinToggledPersistsPinnedRoutes() async {
+  let store = TestStore(initialState: WorkspaceFeature<TestRoute>.State.testValue) {
+    WorkspaceFeature<TestRoute>()
+  }
+
+  await store.send(.routePinToggled(.settings)) {
+    $0.pinnedRouteIDs = [.settings]
+  }
+  await store.receive(\.delegate)
+
+  await store.send(.routePinToggled(.settings)) {
+    $0.pinnedRouteIDs = []
+  }
+  await store.receive(\.delegate)
+}
+
+@MainActor
+@Test
+func recentRoutesCanBeClearedAndRestored() async {
+  var state = WorkspaceFeature<TestRoute>.State.testValue
+  state.recentRouteIDs = [.settings, .review]
+
+  let store = TestStore(initialState: state) {
+    WorkspaceFeature<TestRoute>()
+  }
+
+  await store.send(.recentRoutesCleared) {
+    $0.recentRouteIDs = []
+  }
+  await store.receive(\.delegate)
+}
+
+@MainActor
+@Test
 func restorationStateLoadedRestoresSharedStateAndClearsTransientPaletteState() async {
   var state = WorkspaceFeature<TestRoute>.State.testValue
   state.commandPaletteQuery = "review"
@@ -321,22 +357,50 @@ func restorationStateLoadedRestoresSharedStateAndClearsTransientPaletteState() a
       WorkspaceRestoration(
         selectedRouteID: .settings,
         collapsedSectionIDs: ["main", "unknown"],
+        pinnedRouteIDs: [.settings, .archive, .settings],
         recentCommandIDs: [
           .toolbarAction("export"),
           .appAction("missing"),
           .toolbarAction("export"),
           .route(.inbox),
-        ]
+        ],
+        recentRouteIDs: [.review, .archive, .review, .inbox]
       )
     )
   ) {
     $0.collapsedSectionIDs = []
     $0.commandPaletteQuery = ""
     $0.isCommandPalettePresented = false
+    $0.pinnedRouteIDs = [.settings]
     $0.recentCommandIDs = [.toolbarAction("export"), .route(.inbox)]
+    $0.recentRouteIDs = [.review, .inbox]
     $0.selectedCommandID = nil
     $0.selectedRouteID = .settings
   }
+}
+
+@MainActor
+@Test
+func navigationChangesPrunePinnedAndRecentRoutes() async {
+  var state = WorkspaceFeature<TestRoute>.State.testValue
+  state.pinnedRouteIDs = [.settings, .review]
+  state.recentRouteIDs = [.review, .settings]
+
+  var navigation = state.navigation
+  navigation.sections[0].routes[1].availability = .hidden
+
+  let store = TestStore(initialState: state) {
+    WorkspaceFeature<TestRoute>()
+  }
+
+  await store.send(.navigationRegistryChanged(navigation)) {
+    $0.navigation.sections[0].routes[1].availability = .hidden
+    $0.pinnedRouteIDs = [.settings]
+    $0.recentRouteIDs = [.settings]
+    $0.selectedCommandID = .route(.inbox)
+  }
+  await store.receive(\.delegate)
+  await store.receive(\.delegate)
 }
 
 @MainActor

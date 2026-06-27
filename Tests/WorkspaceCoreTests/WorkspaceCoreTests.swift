@@ -195,6 +195,125 @@ func routeMetadataPatchesApplyAcrossNavigationRegistry() {
 }
 
 @Test
+func routeContentStateIsCodableAndPatchable() throws {
+  let legacyRouteJSON = """
+  {
+    "id": "inbox",
+    "title": "Inbox",
+    "systemImage": "tray.full"
+  }
+  """
+
+  let decodedRoute = try JSONDecoder().decode(
+    WorkspaceRouteDescriptor<TestRoute>.self,
+    from: Data(legacyRouteJSON.utf8)
+  )
+  #expect(decodedRoute.contentState == .ready)
+
+  var route = decodedRoute
+  let changed = route.apply(
+    WorkspaceRouteMetadataPatch(
+      routeID: .inbox,
+      contentState: .set(
+        .empty(
+          title: "No Messages",
+          message: "Everything has been processed.",
+          systemImage: "tray"
+        )
+      )
+    )
+  )
+
+  #expect(changed)
+  #expect(route.contentState.title == "No Messages")
+  #expect(route.contentState.message == "Everything has been processed.")
+}
+
+@Test
+func legacyRestorationPayloadDefaultsPersonalizedNavigationState() throws {
+  let legacyRestorationJSON = """
+  {
+    "selectedRouteID": "settings",
+    "collapsedSectionIDs": ["main"]
+  }
+  """
+
+  let restoration = try JSONDecoder().decode(
+    WorkspaceRestoration<TestRoute>.self,
+    from: Data(legacyRestorationJSON.utf8)
+  )
+
+  #expect(restoration.selectedRouteID == .settings)
+  #expect(restoration.collapsedSectionIDs == ["main"])
+  #expect(restoration.pinnedRouteIDs.isEmpty)
+  #expect(restoration.recentRouteIDs.isEmpty)
+}
+
+@Test
+func registryValidationReportsShortcutAndRouteDiagnostics() {
+  let registry = WorkspaceNavigationRegistry(
+    sections: [
+      WorkspaceRouteSection(
+        id: "main",
+        title: "",
+        routes: [
+          WorkspaceRouteDescriptor(
+            id: TestRoute.inbox,
+            title: "",
+            systemImage: "",
+            shortcut: .command("1")
+          ),
+          WorkspaceRouteDescriptor(
+            id: TestRoute.inbox,
+            title: "Inbox Duplicate",
+            systemImage: "tray",
+            shortcut: .command("1")
+          ),
+          WorkspaceRouteDescriptor(
+            id: TestRoute.review,
+            title: "Review",
+            systemImage: "checklist",
+            availability: .hidden
+          ),
+        ]
+      ),
+    ],
+    commands: [
+      .appAction(
+        id: "refresh",
+        title: "",
+        systemImage: "arrow.clockwise",
+        shortcut: .command("1")
+      ),
+      .appAction(
+        id: "refresh",
+        title: "Refresh Again",
+        systemImage: "arrow.clockwise"
+      ),
+    ]
+  )
+
+  let report = registry.validate(
+    selectedRouteID: .archive,
+    pinnedRouteIDs: [.review],
+    recentRouteIDs: [.archive]
+  )
+  let codes = Set(report.diagnostics.map(\.code))
+
+  #expect(report.hasErrors)
+  #expect(codes.contains(.duplicateRouteID))
+  #expect(codes.contains(.duplicateCommandID))
+  #expect(codes.contains(.duplicateShortcut))
+  #expect(codes.contains(.emptyCommandTitle))
+  #expect(codes.contains(.emptyRouteSystemImage))
+  #expect(codes.contains(.emptyRouteTitle))
+  #expect(codes.contains(.emptySectionTitle))
+  #expect(codes.contains(.missingPinnedRoute))
+  #expect(codes.contains(.missingRecentRoute))
+  #expect(codes.contains(.missingSelectedRoute))
+}
+
+@Test
 func routeOpenURLParserBuildsTypedRequestsFromHostAndPathCandidates() throws {
   let parser = WorkspaceRouteOpenURLParser(
     routesByPath: [

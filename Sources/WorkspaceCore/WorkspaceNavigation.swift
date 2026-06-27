@@ -46,6 +46,7 @@ public struct WorkspaceRouteDescriptor<RouteID: Hashable & Sendable>:
 {
   public var availability: WorkspaceAvailability
   public var badge: Int?
+  public var contentState: WorkspaceRouteContentState
   public var id: RouteID
   public var isProminent: Bool
   public var keywords: [String]
@@ -63,6 +64,7 @@ public struct WorkspaceRouteDescriptor<RouteID: Hashable & Sendable>:
     availability: WorkspaceAvailability = .available,
     subtitle: String? = nil,
     badge: Int? = nil,
+    contentState: WorkspaceRouteContentState = .ready,
     keywords: [String] = [],
     shortcut: WorkspaceKeyboardShortcut? = nil,
     isProminent: Bool = false,
@@ -71,6 +73,7 @@ public struct WorkspaceRouteDescriptor<RouteID: Hashable & Sendable>:
   ) {
     self.availability = availability
     self.badge = badge
+    self.contentState = contentState
     self.id = id
     self.isProminent = isProminent
     self.keywords = keywords
@@ -83,7 +86,52 @@ public struct WorkspaceRouteDescriptor<RouteID: Hashable & Sendable>:
   }
 }
 
-extension WorkspaceRouteDescriptor: Codable where RouteID: Codable {}
+extension WorkspaceRouteDescriptor: Codable where RouteID: Codable {
+  private enum CodingKeys: String, CodingKey {
+    case availability
+    case badge
+    case contentState
+    case id
+    case isProminent
+    case keywords
+    case presentation
+    case scenePresentation
+    case shortcut
+    case subtitle
+    case systemImage
+    case title
+  }
+
+  public init(from decoder: any Decoder) throws {
+    let container = try decoder.container(keyedBy: CodingKeys.self)
+    self.init(
+      id: try container.decode(RouteID.self, forKey: .id),
+      title: try container.decode(String.self, forKey: .title),
+      systemImage: try container.decode(String.self, forKey: .systemImage),
+      availability: try container.decodeIfPresent(WorkspaceAvailability.self, forKey: .availability) ?? .available,
+      subtitle: try container.decodeIfPresent(String.self, forKey: .subtitle),
+      badge: try container.decodeIfPresent(Int.self, forKey: .badge),
+      contentState: try container.decodeIfPresent(WorkspaceRouteContentState.self, forKey: .contentState) ?? .ready,
+      keywords: try container.decodeIfPresent([String].self, forKey: .keywords) ?? [],
+      shortcut: try container.decodeIfPresent(WorkspaceKeyboardShortcut.self, forKey: .shortcut),
+      isProminent: try container.decodeIfPresent(Bool.self, forKey: .isProminent) ?? false,
+      presentation: try container.decodeIfPresent(WorkspaceRoutePresentation.self, forKey: .presentation) ?? .listDetail,
+      scenePresentation: try container.decodeIfPresent(WorkspaceScenePresentation.self, forKey: .scenePresentation) ?? .primary
+    )
+  }
+}
+
+extension WorkspaceNavigationRegistry {
+  public func route(for routeID: RouteID) -> WorkspaceRouteDescriptor<RouteID>? {
+    sections.lazy.flatMap(\.routes).first { $0.id == routeID }
+  }
+
+  public func visibleRoute(for routeID: RouteID) -> WorkspaceRouteDescriptor<RouteID>? {
+    guard let route = route(for: routeID), route.availability.isVisible
+    else { return nil }
+    return route
+  }
+}
 
 /// The app-owned source of truth for route sections and app commands.
 public struct WorkspaceNavigationRegistry<RouteID: Hashable & Sendable>:

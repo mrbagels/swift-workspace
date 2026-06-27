@@ -13,10 +13,43 @@ public struct WorkspaceFeature<RouteID: Hashable & Sendable> {
     public var commandPolicy: WorkspaceCommandExecutionPolicy<RouteID>
     public var isCommandPalettePresented: Bool
     public var navigation: WorkspaceNavigationRegistry<RouteID>
+    public var pinnedRouteIDs: [RouteID]
     public var recentCommandIDs: [WorkspaceCommandIdentifier<RouteID>]
     public var recentCommandLimit: Int
+    public var recentRouteIDs: [RouteID]
+    public var recentRouteLimit: Int
     public var selectedCommandID: WorkspaceCommandIdentifier<RouteID>?
     public var selectedRouteID: RouteID
+
+    public init(
+      collapsedSectionIDs: Set<WorkspaceRouteSectionID> = [],
+      commandPaletteQuery: String = "",
+      commandPolicy: WorkspaceCommandExecutionPolicy<RouteID> = .allowAll,
+      isCommandPalettePresented: Bool = false,
+      navigation: WorkspaceNavigationRegistry<RouteID>,
+      pinnedRouteIDs: [RouteID] = [],
+      recentCommandIDs: [WorkspaceCommandIdentifier<RouteID>] = [],
+      recentCommandLimit: Int = 8,
+      recentRouteIDs: [RouteID] = [],
+      recentRouteLimit: Int = 8,
+      selectedCommandID: WorkspaceCommandIdentifier<RouteID>? = nil,
+      selectedRouteID: RouteID
+    ) {
+      self.collapsedSectionIDs = collapsedSectionIDs
+      self.commandPaletteQuery = commandPaletteQuery
+      self.commandPolicy = commandPolicy
+      self.isCommandPalettePresented = isCommandPalettePresented
+      self.navigation = navigation
+      self.pinnedRouteIDs = []
+      self.recentCommandIDs = Array(recentCommandIDs.prefix(max(0, recentCommandLimit)))
+      self.recentCommandLimit = max(0, recentCommandLimit)
+      self.recentRouteIDs = []
+      self.recentRouteLimit = max(0, recentRouteLimit)
+      self.selectedCommandID = selectedCommandID
+      self.selectedRouteID = selectedRouteID
+      restorePinnedRoutes(pinnedRouteIDs)
+      restoreRecentRoutes(recentRouteIDs)
+    }
 
     public init(
       collapsedSectionIDs: Set<WorkspaceRouteSectionID> = [],
@@ -29,15 +62,20 @@ public struct WorkspaceFeature<RouteID: Hashable & Sendable> {
       selectedCommandID: WorkspaceCommandIdentifier<RouteID>? = nil,
       selectedRouteID: RouteID
     ) {
-      self.collapsedSectionIDs = collapsedSectionIDs
-      self.commandPaletteQuery = commandPaletteQuery
-      self.commandPolicy = commandPolicy
-      self.isCommandPalettePresented = isCommandPalettePresented
-      self.navigation = navigation
-      self.recentCommandIDs = Array(recentCommandIDs.prefix(max(0, recentCommandLimit)))
-      self.recentCommandLimit = max(0, recentCommandLimit)
-      self.selectedCommandID = selectedCommandID
-      self.selectedRouteID = selectedRouteID
+      self.init(
+        collapsedSectionIDs: collapsedSectionIDs,
+        commandPaletteQuery: commandPaletteQuery,
+        commandPolicy: commandPolicy,
+        isCommandPalettePresented: isCommandPalettePresented,
+        navigation: navigation,
+        pinnedRouteIDs: [],
+        recentCommandIDs: recentCommandIDs,
+        recentCommandLimit: recentCommandLimit,
+        recentRouteIDs: [],
+        recentRouteLimit: 8,
+        selectedCommandID: selectedCommandID,
+        selectedRouteID: selectedRouteID
+      )
     }
 
     public var availableCommands: [WorkspaceCommand<RouteID>] {
@@ -63,11 +101,21 @@ public struct WorkspaceFeature<RouteID: Hashable & Sendable> {
       return recentCommandIDs.compactMap { commandsByID[$0] }
     }
 
+    public var pinnedRoutes: [WorkspaceRouteDescriptor<RouteID>] {
+      pinnedRouteIDs.compactMap(visibleRoute(for:))
+    }
+
+    public var recentRoutes: [WorkspaceRouteDescriptor<RouteID>] {
+      recentRouteIDs.compactMap(visibleRoute(for:))
+    }
+
     public var restorationState: WorkspaceRestoration<RouteID> {
       WorkspaceRestoration(
         selectedRouteID: selectedRouteID,
         collapsedSectionIDs: collapsedSectionIDs,
-        recentCommandIDs: recentCommandIDs
+        pinnedRouteIDs: pinnedRouteIDs,
+        recentCommandIDs: recentCommandIDs,
+        recentRouteIDs: recentRouteIDs
       )
     }
 
@@ -109,6 +157,10 @@ public struct WorkspaceFeature<RouteID: Hashable & Sendable> {
       guard let section = sections.first(where: { $0.id == sectionID })
       else { return false }
       return !section.isCollapsible || !collapsedSectionIDs.contains(sectionID)
+    }
+
+    public func isRoutePinned(_ routeID: RouteID) -> Bool {
+      pinnedRouteIDs.contains(routeID)
     }
 
     public var firstSelectableRouteID: RouteID? {
@@ -175,7 +227,9 @@ public struct WorkspaceFeature<RouteID: Hashable & Sendable> {
           .map(\.id)
       )
       collapsedSectionIDs.formIntersection(collapsibleSectionIDs)
+      restorePinnedRoutes(pinnedRouteIDs)
       restoreRecentCommands(recentCommandIDs)
+      restoreRecentRoutes(recentRouteIDs)
 
       if routeOpenRejectionReason(for: selectedRouteID) != nil,
          let firstSelectableRouteID {
@@ -212,6 +266,33 @@ public struct WorkspaceFeature<RouteID: Hashable & Sendable> {
       return true
     }
 
+    @discardableResult
+    mutating func clearRecentRoutes() -> Bool {
+      guard !recentRouteIDs.isEmpty
+      else { return false }
+      recentRouteIDs = []
+      return true
+    }
+
+    @discardableResult
+    mutating func recordRecentRoute(_ routeID: RouteID) -> Bool {
+      guard recentRouteLimit > 0
+      else {
+        let changed = !recentRouteIDs.isEmpty
+        recentRouteIDs = []
+        return changed
+      }
+
+      guard visibleRoute(for: routeID) != nil
+      else { return false }
+
+      let previousRouteIDs = recentRouteIDs
+      recentRouteIDs.removeAll { $0 == routeID }
+      recentRouteIDs.insert(routeID, at: 0)
+      trimRecentRoutes()
+      return previousRouteIDs != recentRouteIDs
+    }
+
     mutating func restore(_ restorationState: WorkspaceRestoration<RouteID>) {
       let collapsibleSectionIDs = Set(
         sections
@@ -226,7 +307,9 @@ public struct WorkspaceFeature<RouteID: Hashable & Sendable> {
       collapsedSectionIDs = restorationState.collapsedSectionIDs
         .intersection(collapsibleSectionIDs)
       expandSection(containing: selectedRouteID)
+      restorePinnedRoutes(restorationState.pinnedRouteIDs)
       restoreRecentCommands(restorationState.recentCommandIDs)
+      restoreRecentRoutes(restorationState.recentRouteIDs)
       dismissCommandPalette()
     }
 
@@ -243,6 +326,19 @@ public struct WorkspaceFeature<RouteID: Hashable & Sendable> {
         collapsedSectionIDs.remove(sectionID)
       } else {
         collapsedSectionIDs.insert(sectionID)
+      }
+      return true
+    }
+
+    @discardableResult
+    mutating func togglePinnedRoute(_ routeID: RouteID) -> Bool {
+      guard visibleRoute(for: routeID) != nil
+      else { return false }
+
+      if let index = pinnedRouteIDs.firstIndex(of: routeID) {
+        pinnedRouteIDs.remove(at: index)
+      } else {
+        pinnedRouteIDs.insert(routeID, at: 0)
       }
       return true
     }
@@ -268,11 +364,37 @@ public struct WorkspaceFeature<RouteID: Hashable & Sendable> {
       trimRecentCommands()
     }
 
+    private mutating func restorePinnedRoutes(_ routeIDs: [RouteID]) {
+      pinnedRouteIDs = uniqueVisibleRouteIDs(routeIDs)
+    }
+
+    private mutating func restoreRecentRoutes(_ routeIDs: [RouteID]) {
+      recentRouteIDs = uniqueVisibleRouteIDs(routeIDs)
+      trimRecentRoutes()
+    }
+
     private mutating func trimRecentCommands() {
       let limit = max(0, recentCommandLimit)
       if recentCommandIDs.count > limit {
         recentCommandIDs.removeLast(recentCommandIDs.count - limit)
       }
+    }
+
+    private mutating func trimRecentRoutes() {
+      let limit = max(0, recentRouteLimit)
+      if recentRouteIDs.count > limit {
+        recentRouteIDs.removeLast(recentRouteIDs.count - limit)
+      }
+    }
+
+    private func uniqueVisibleRouteIDs(_ routeIDs: [RouteID]) -> [RouteID] {
+      var restoredRouteIDs: [RouteID] = []
+      var seenRouteIDs: Set<RouteID> = []
+      for routeID in routeIDs
+      where visibleRoute(for: routeID) != nil && seenRouteIDs.insert(routeID).inserted {
+        restoredRouteIDs.append(routeID)
+      }
+      return restoredRouteIDs
     }
   }
 
@@ -289,9 +411,11 @@ public struct WorkspaceFeature<RouteID: Hashable & Sendable> {
     case delegate(Delegate)
     case navigationRegistryChanged(WorkspaceNavigationRegistry<RouteID>)
     case recentCommandsCleared
+    case recentRoutesCleared
     case restorationStateLoaded(WorkspaceRestoration<RouteID>)
     case routeOpenRequested(WorkspaceRouteOpenRequest<RouteID>)
     case routeMetadataPatchesApplied([WorkspaceRouteMetadataPatch<RouteID>])
+    case routePinToggled(RouteID)
     case routeSelected(RouteID)
     case sceneRequested(RouteID)
     case sectionDisclosureButtonTapped(WorkspaceRouteSectionID)
@@ -426,6 +550,11 @@ public struct WorkspaceFeature<RouteID: Hashable & Sendable> {
         else { return .none }
         return restorationStateChanged(state)
 
+      case .recentRoutesCleared:
+        guard state.clearRecentRoutes()
+        else { return .none }
+        return restorationStateChanged(state)
+
       case .restorationStateLoaded(let restorationState):
         state.restore(restorationState)
         return .none
@@ -445,14 +574,23 @@ public struct WorkspaceFeature<RouteID: Hashable & Sendable> {
           previousSelectedRouteID: previousSelectedRouteID
         )
 
-      case .routeSelected(let id):
-        guard state.selectedRouteID != id,
-              state.routeOpenRejectionReason(for: id) == nil
+      case .routePinToggled(let id):
+        guard state.togglePinnedRoute(id)
         else { return .none }
+        return restorationStateChanged(state)
+
+      case .routeSelected(let id):
+        guard state.routeOpenRejectionReason(for: id) == nil
+        else { return .none }
+        let selectedRouteChanged = state.selectedRouteID != id
+        let didRecordRecentRoute = state.recordRecentRoute(id)
         state.selectedRouteID = id
         state.dismissCommandPalette()
         state.expandSection(containing: id)
-        return delegate(.routeSelected(id), saving: state)
+        if selectedRouteChanged {
+          return delegate(.routeSelected(id), saving: state)
+        }
+        return didRecordRecentRoute ? restorationStateChanged(state) : .none
 
       case .sceneRequested(let id):
         guard let request = state.sceneRequest(for: id, source: .routeAction)
@@ -619,6 +757,7 @@ public struct WorkspaceFeature<RouteID: Hashable & Sendable> {
     }
 
     let selectedRouteChanged = state.selectedRouteID != id
+    let didRecordRecentRoute = state.recordRecentRoute(id)
     state.selectedRouteID = id
     state.expandSection(containing: id)
     if dismissesPalette {
@@ -627,7 +766,9 @@ public struct WorkspaceFeature<RouteID: Hashable & Sendable> {
 
     guard selectedRouteChanged
     else {
-      return recordsRecentCommand ? restorationStateChanged(state) : .none
+      return recordsRecentCommand || didRecordRecentRoute
+        ? restorationStateChanged(state)
+        : .none
     }
 
     return delegate(.routeSelected(id), saving: state)

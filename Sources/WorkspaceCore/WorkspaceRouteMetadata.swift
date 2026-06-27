@@ -29,6 +29,7 @@ public struct WorkspaceRouteMetadataPatch<RouteID: Hashable & Sendable>:
 {
   public var availability: WorkspaceValuePatch<WorkspaceAvailability>
   public var badge: WorkspaceValuePatch<Int?>
+  public var contentState: WorkspaceValuePatch<WorkspaceRouteContentState>
   public var isProminent: WorkspaceValuePatch<Bool>
   public var keywords: WorkspaceValuePatch<[String]>
   public var presentation: WorkspaceValuePatch<WorkspaceRoutePresentation>
@@ -43,6 +44,7 @@ public struct WorkspaceRouteMetadataPatch<RouteID: Hashable & Sendable>:
     routeID: RouteID,
     availability: WorkspaceValuePatch<WorkspaceAvailability> = .unchanged,
     badge: WorkspaceValuePatch<Int?> = .unchanged,
+    contentState: WorkspaceValuePatch<WorkspaceRouteContentState> = .unchanged,
     isProminent: WorkspaceValuePatch<Bool> = .unchanged,
     keywords: WorkspaceValuePatch<[String]> = .unchanged,
     presentation: WorkspaceValuePatch<WorkspaceRoutePresentation> = .unchanged,
@@ -54,6 +56,7 @@ public struct WorkspaceRouteMetadataPatch<RouteID: Hashable & Sendable>:
   ) {
     self.availability = availability
     self.badge = badge
+    self.contentState = contentState
     self.isProminent = isProminent
     self.keywords = keywords
     self.presentation = presentation
@@ -79,6 +82,7 @@ extension WorkspaceRouteDescriptor {
     var changed = false
     changed = patch.availability.apply(to: &availability) || changed
     changed = patch.badge.apply(to: &badge) || changed
+    changed = patch.contentState.apply(to: &contentState) || changed
     changed = patch.isProminent.apply(to: &isProminent) || changed
     changed = patch.keywords.apply(to: &keywords) || changed
     changed = patch.presentation.apply(to: &presentation) || changed
