@@ -79,7 +79,7 @@ analytics, server decisions, and product-specific UI.
 | Design system | Shared SwiftUI primitives for badges, keycaps, section labels, and route status states. |
 | Persistence | JSON, UserDefaults, file storage, SQLiteData codecs, CloudKit contracts, and conflict policy values. |
 | Automation | Serializable command catalog, shortcut descriptors, and App Intent handoff payloads. |
-| Server | Optional Comet-backed client for health, entitlements, templates, jobs, and diagnostics. |
+| Server | Optional Comet-backed client and test workflow for health, entitlements, templates, jobs, diagnostics, cassettes, replay, and contracts. |
 
 ## Install
 
@@ -113,7 +113,7 @@ Then import only the products you need:
 | Add lightweight restoration | `WorkspacePersistence` | `WorkspaceSQLiteData` |
 | Keep iCloud primary | `WorkspaceCloudKit` | App-owned CloudKit adapters |
 | Expose Shortcuts or App Intents | `WorkspaceAutomationBridge` | Host app `AppIntent` types |
-| Call a companion service | `WorkspaceServerClient` | Your Comet release and server workflow |
+| Call a companion service | `WorkspaceServerClient` | `WorkspaceServerTesting` for fixtures and contracts |
 
 ## Product Map
 
@@ -128,6 +128,7 @@ Then import only the products you need:
 | `WorkspaceShellDesignSystem` | SwiftUI badges, keycaps, section labels, and route status views shared by renderers. |
 | `WorkspaceAutomationBridge` | Automation descriptors, shortcut metadata, and App Intent handoff payloads. |
 | `WorkspaceServerClient` | Optional Comet client for companion service contracts. |
+| `WorkspaceServerTesting` | Optional CometTesting helpers for server cassettes, replay, and contract reports. |
 | `MacWorkspaceShell` | Custom macOS shell with sidebar styles, command palette, menus, toolbar, inspector, and scenes. |
 | `IOSWorkspaceShell` | Adaptive iOS and iPadOS renderer with stack or split navigation, command search, pins, recents, and scene actions. |
 
@@ -345,13 +346,19 @@ the command catalog remains shared.
 ### Server Companion
 
 `WorkspaceServerClient` is optional and uses
-[`Comet`](https://github.com/mrbagels/comet). It provides typed calls for:
+[`Comet`](https://github.com/mrbagels/comet) `0.4.1` or newer. It provides typed
+calls for:
 
 - health,
 - entitlements,
 - templates,
 - job submission and status,
-- diagnostics upload.
+- diagnostics upload,
+- Comet activity and trace snapshots for diagnostics.
+
+`WorkspaceServerTesting` layers CometTesting on top of the same client so test
+targets can record cassettes, replay approved fixtures, promote cassettes to
+strict contracts, and emit contract reports.
 
 The server is a companion surface, not canonical storage. Keep documents,
 workspace restoration, and user-owned data local or iCloud-primary.

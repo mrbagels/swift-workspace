@@ -77,6 +77,7 @@ docc_catalogs=(
   "Sources/WorkspaceShellDesignSystem/WorkspaceShellDesignSystem.docc/WorkspaceShellDesignSystem.md"
   "Sources/WorkspaceAutomationBridge/WorkspaceAutomationBridge.docc/WorkspaceAutomationBridge.md"
   "Sources/WorkspaceServerClient/WorkspaceServerClient.docc/WorkspaceServerClient.md"
+  "Sources/WorkspaceServerTesting/WorkspaceServerTesting.docc/WorkspaceServerTesting.md"
   "Sources/MacWorkspaceShell/MacWorkspaceShell.docc/MacWorkspaceShell.md"
   "Sources/IOSWorkspaceShell/IOSWorkspaceShell.docc/IOSWorkspaceShell.md"
 )

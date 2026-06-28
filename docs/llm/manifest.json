@@ -40,7 +40,7 @@
     },
     {
       "path": "docs/adoption/server-client.md",
-      "description": "Optional WorkspaceServerClient adoption guide for thin companion server workflows."
+      "description": "Optional WorkspaceServerClient and WorkspaceServerTesting adoption guide for thin companion server workflows."
     },
     {
       "path": "docs/operations/api-review-checklist.md",

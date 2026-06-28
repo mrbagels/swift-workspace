@@ -1,6 +1,6 @@
 # Package Map
 
-Last updated: 2026-06-27
+Last updated: 2026-06-28
 
 ## Products
 
@@ -15,6 +15,7 @@ Last updated: 2026-06-27
 | `WorkspaceShellDesignSystem` | WorkspaceCore, SwiftUI | Shared SwiftUI primitives for bundled shells and custom renderers. |
 | `WorkspaceAutomationBridge` | WorkspaceCore | Serializable automation catalog and App Intent handoff descriptors. |
 | `WorkspaceServerClient` | WorkspaceCore, Comet, CometTCA, TCA | Optional companion server client for typed non-storage workflows. |
+| `WorkspaceServerTesting` | WorkspaceServerClient, Comet, CometTesting | Optional cassette, replay, and contract helpers for server client tests. |
 | `MacWorkspaceShell` | WorkspaceCore, WorkspaceTCA, SwiftUI | macOS renderer. |
 | `IOSWorkspaceShell` | WorkspaceCore, WorkspaceTCA, SwiftUI | iOS and iPadOS renderer. |
 
@@ -45,6 +46,7 @@ settings.
 - Optional adapters must not leak into core products.
 - Platform renderers must consume the reducer, not duplicate it.
 - Demo apps may import umbrella products for ergonomics.
+- `WorkspaceServerTesting` must stay out of production demo and app targets.
 - Tests should prefer package-level behavior over app-level UI until renderers
   stabilize.
 
@@ -137,8 +139,17 @@ and route count instead of repeatedly scanning every patch for every route.
 
 - an optional Comet-backed HTTP client,
 - typed health, entitlement, template, job, and diagnostics requests,
+- Comet request metadata, retry, deduplication, and cache-policy hints,
+- HTTP activity, trace, and cache diagnostic event snapshots for uploads,
 - a TCA `Effect.workspaceServerRequest` helper,
 - tests backed by `CometTesting`.
+
+`WorkspaceServerTesting` currently provides:
+
+- recording sessions backed by `RecordingTransport`,
+- replay clients backed by approved `HTTPCassette` fixtures,
+- strict contract sessions backed by cassette-promoted expectations,
+- contract report writing for CI artifacts.
 
 ## Adoption And Distribution Docs
 
@@ -173,6 +184,7 @@ DocC landing pages are scaffolded in each public product target:
 - `Sources/WorkspaceShellDesignSystem/WorkspaceShellDesignSystem.docc`
 - `Sources/WorkspaceAutomationBridge/WorkspaceAutomationBridge.docc`
 - `Sources/WorkspaceServerClient/WorkspaceServerClient.docc`
+- `Sources/WorkspaceServerTesting/WorkspaceServerTesting.docc`
 - `Sources/MacWorkspaceShell/MacWorkspaceShell.docc`
 - `Sources/IOSWorkspaceShell/IOSWorkspaceShell.docc`
 

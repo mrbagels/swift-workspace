@@ -52,6 +52,8 @@ product surface stable.
 - SQLiteData helpers do not own the app database lifecycle.
 - CloudKit helpers do not own the app container lifecycle.
 - Server clients remain optional and app-owned.
+- Server testing helpers remain in `WorkspaceServerTesting`, not production app
+  targets or engine products.
 
 ## Documentation
 
@@ -59,6 +61,8 @@ product surface stable.
 - `docs/technical/package-map.md` matches products and dependencies.
 - Adoption docs cover Mac, iOS, custom renderer, engine-only, persistence, and
   CloudKit paths.
+- Server adoption docs cover client usage, diagnostics snapshots, and
+  cassette-to-contract testing when `WorkspaceServerTesting` is present.
 - The phased plan says what is complete, what is in progress, and what is
   decision-gated.
 - Breaking changes have migration notes.

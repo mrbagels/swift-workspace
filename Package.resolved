@@ -1,5 +1,5 @@
 {
-  "originHash" : "b0ea6d3e59700a71ebce57ddfbb871dc4cec4d033f70a93c4343ec41364c1fda",
+  "originHash" : "41ea91e06f4033012b91aac327eb03b6e8e15bd988a6cad6c0c100168e1338ca",
   "pins" : [
     {
       "identity" : "combine-schedulers",
@@ -15,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/mrbagels/comet",
       "state" : {
-        "revision" : "fafc9e72ad23d823e7b77fb0405d9da11d0371ff",
-        "version" : "0.1.0"
+        "revision" : "6b924235d3295cba310ae73bc8e2994b745677ed",
+        "version" : "0.4.1"
       }
     },
     {
@@ -159,8 +159,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/swift-structured-queries",
       "state" : {
-        "revision" : "b59f4424b9050739ac7c2d82e80edf5e6dbb19e8",
-        "version" : "0.31.3"
+        "revision" : "859958c7cf76918abf5aa5d6ce8b068e00a77eb2",
+        "version" : "0.32.0"
       }
     },
     {
@@ -179,6 +179,15 @@
       "state" : {
         "revision" : "401bf70d95bfe8db2a1dc619f9e175a85c089321",
         "version" : "1.10.1"
+      }
+    },
+    {
+      "identity" : "yams",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/jpsim/Yams.git",
+      "state" : {
+        "revision" : "a27b21e0c81c5bf42049b897a62aaf387e80f279",
+        "version" : "6.2.2"
       }
     }
   ],

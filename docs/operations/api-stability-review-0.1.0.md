@@ -25,6 +25,7 @@ adoption docs.
 - `WorkspaceShellDesignSystem`
 - `WorkspaceAutomationBridge`
 - `WorkspaceServerClient`
+- `WorkspaceServerTesting`
 - `MacWorkspaceShell`
 - `IOSWorkspaceShell`
 - Demo targets, starter apps, custom renderer example, adoption docs, package
@@ -86,6 +87,8 @@ Adapter rules: pass.
   container lifecycle.
 - `WorkspaceServerClient` is optional, Comet-backed, and not linked by core
   engine, persistence, or renderer products.
+- `WorkspaceServerTesting` is optional, CometTesting-backed, and scoped to test
+  fixtures, replay, contracts, and reports.
 - `WorkspaceAutomationBridge` is descriptor-only and leaves concrete App Intent
   types to host app targets.
 - `WorkspaceShellDesignSystem` owns reusable SwiftUI primitives only.
@@ -119,5 +122,6 @@ Known limits:
   server-backed workflow, authentication model, request payloads, offline
   behavior, retry behavior, cancellation behavior, and privacy requirements are
   known.
+- Do not import `WorkspaceServerTesting` from production targets.
 - For future public behavior, add reducer and renderer fixtures before merging
   the feature.

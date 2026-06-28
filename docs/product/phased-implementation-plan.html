@@ -113,7 +113,7 @@
 
     <section class="phase">
       <h2>Phase 6: Companion Server</h2>
-      <p>Decision-gated: server scope, anti-scope, initial API areas, and implementation gates are documented. Do not add <code>WorkspaceServerClient</code> until a consuming app proves the first server-backed workflow.</p>
+      <p>Complete for the optional typed client contract: <code>WorkspaceServerClient</code> provides Comet-backed companion requests, diagnostics snapshots, request metadata, retry and cache hints, and a TCA request helper. <code>WorkspaceServerTesting</code> provides cassette recording, replay, strict contracts, and report helpers. Live backend workflows remain app-owned and decision-gated.</p>
     </section>
 
     <section class="phase">

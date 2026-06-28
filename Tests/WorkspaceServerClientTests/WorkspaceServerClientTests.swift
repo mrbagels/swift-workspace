@@ -13,6 +13,8 @@ func serverClientRequestsUseTypedCometContracts() async throws {
       switch (request.method.rawValue, request.url.path) {
       case ("GET", "/v1/entitlements"):
         #expect(request.url.query == "user_id=user-1")
+        #expect(request.metadata.operationID == "workspace.entitlements")
+        #expect(request.metadata.tags == ["workspace-server", "entitlements"])
         return try jsonResponse(
           WorkspaceEntitlements(
             plan: "pro",
@@ -22,6 +24,7 @@ func serverClientRequestsUseTypedCometContracts() async throws {
         )
 
       case ("GET", "/v1/templates"):
+        #expect(request.metadata.operationID == "workspace.templates.list")
         return try jsonResponse(
           WorkspaceTemplateList(
             templates: [
@@ -36,6 +39,12 @@ func serverClientRequestsUseTypedCometContracts() async throws {
 
       case ("POST", "/v1/jobs"):
         #expect(request.body?.isEmpty == false)
+        #expect(request.metadata.operationID == "workspace.jobs.submit")
+        #expect(
+          request.headers.first {
+            $0.name.rawName.lowercased() == "idempotency-key"
+          }?.value == "key-1"
+        )
         return try jsonResponse(
           WorkspaceJobStatus(
             id: "job-1",
@@ -46,6 +55,7 @@ func serverClientRequestsUseTypedCometContracts() async throws {
 
       case ("POST", "/v1/diagnostics"):
         #expect(request.body?.isEmpty == false)
+        #expect(request.metadata.operationID == "workspace.diagnostics.upload")
         return try jsonResponse(
           WorkspaceDiagnosticsReceipt(
             accepted: true,
@@ -119,6 +129,67 @@ func jobStatusRequestEncodesJobIDInPath() async throws {
 
   let status = try await client.jobStatus(id: "job with space")
   #expect(status.phase == WorkspaceJobPhase.succeeded)
+}
+
+@Test
+func diagnosticsUploadCanCarryCometEventSnapshots() throws {
+  let requestID = UUID()
+  let url = URL(string: "https://workspace.example/v1/templates")!
+  let metadata = RequestMetadata(
+    name: "Workspace Templates",
+    tags: ["workspace-server", "templates"],
+    operationID: "workspace.templates.list"
+  )
+  let retry = WorkspaceServerDiagnosticEvent(
+    event: .requestRetried(
+      id: requestID,
+      attempt: 2,
+      delay: .milliseconds(250),
+      metadata: metadata
+    )
+  )
+  let trace = RequestTrace(
+    id: requestID,
+    metadata: metadata,
+    method: .get,
+    url: url,
+    attempts: [
+      RequestTraceAttempt(
+        number: 1,
+        method: .get,
+        url: url,
+        requestBytes: 0,
+        responseStatusCode: 200,
+        responseBytes: 16,
+        error: nil,
+        duration: .milliseconds(10)
+      ),
+    ],
+    duration: .milliseconds(10),
+    result: .success(statusCode: 200, responseBytes: 16),
+    traceContext: nil,
+    cacheEvents: [
+      RequestCacheTraceEvent(
+        kind: .hit,
+        key: HTTPCacheKey(method: .get, url: url),
+        policy: .staleWhileRevalidate,
+        reason: .cacheHit
+      ),
+    ]
+  )
+  let events = [retry, WorkspaceServerDiagnosticEvent(trace: trace)]
+    + WorkspaceServerDiagnosticEvent.cacheEvents(for: trace)
+  let upload = WorkspaceDiagnosticsUpload(
+    diagnostics: [],
+    serverEvents: events
+  )
+
+  let data = try JSONEncoder().encode(upload)
+  let decoded = try JSONDecoder().decode(WorkspaceDiagnosticsUpload.self, from: data)
+
+  #expect(decoded.serverEvents.count == 3)
+  #expect(decoded.serverEvents.map(\.source) == [.http, .trace, .cache])
+  #expect(decoded.serverEvents.first?.severity == .warning)
 }
 
 private func jsonResponse<T: Encodable & Sendable>(

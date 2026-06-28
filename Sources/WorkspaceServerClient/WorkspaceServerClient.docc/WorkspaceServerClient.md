@@ -11,6 +11,11 @@ diagnostics upload.
 The server client is not primary storage. User-owned documents, workspace
 restoration, and local-first preferences should remain local or iCloud-primary.
 
+Requests carry stable Comet operation metadata, workspace tags, `/v1` versioning,
+deduplication keys for reads, conservative retry policy, and template cache
+policy hints. The client also exposes Comet activity and trace streams so apps
+can add HTTP, trace, and cache snapshots to workspace diagnostics uploads.
+
 Use this module for:
 
 - health checks,
@@ -18,6 +23,7 @@ Use this module for:
 - template catalogs,
 - job submission and status,
 - diagnostics upload,
+- server diagnostic event snapshots,
 - TCA request effects through Comet.
 
 ## Topics
@@ -40,5 +46,7 @@ Use this module for:
 - ``WorkspaceJobSubmission``
 - ``WorkspaceJobPhase``
 - ``WorkspaceJobStatus``
+- ``WorkspaceServerDiagnosticSource``
+- ``WorkspaceServerDiagnosticEvent``
 - ``WorkspaceDiagnosticsUpload``
 - ``WorkspaceDiagnosticsReceipt``

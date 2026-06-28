@@ -1,6 +1,6 @@
 # Server-Side Companion
 
-Last updated: 2026-06-27
+Last updated: 2026-06-28
 
 ## Principle
 
@@ -47,11 +47,16 @@ Server calls should live in app features or optional client products, not inside
 ```text
 WorkspaceServerClient
   typed Comet requests
+  request metadata, retry, cache policy, and diagnostics snapshots
   request and response models
   retry policy helpers
   auth token injection hooks
   no dependency from WorkspaceCore
 ```
+
+Test and fixture workflows can add `WorkspaceServerTesting`, which layers
+CometTesting recording, replay, strict contracts, and JSON reports on top of the
+same typed client. Production app targets should not import it.
 
 The product is suitable for apps that already need companion capabilities. It is
 not required by the core engine, TCA reducer, bundled renderers, persistence, or

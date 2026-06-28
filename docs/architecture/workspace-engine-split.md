@@ -1,6 +1,6 @@
 # Workspace Engine Split
 
-Last updated: 2026-06-27
+Last updated: 2026-06-28
 
 ## Goal
 
@@ -145,6 +145,15 @@ It must remain separate from `WorkspaceCore`, `WorkspaceTCA`, and renderers. The
 shared reducer may emit command delegates that an app maps to server effects,
 but the engine should not call the server directly.
 
+### WorkspaceServerTesting
+
+`WorkspaceServerTesting` is optional and CometTesting-backed. It provides
+recording, replay, cassette promotion, strict contract, and report helpers for
+tests and local proof workflows around `WorkspaceServerClient`.
+
+It must not be imported by production app targets, platform renderers, or core
+engine products.
+
 ### MacWorkspaceShell
 
 `MacWorkspaceShell` renders `WorkspaceTCA` on macOS. It may use SwiftUI, AppKit,
@@ -268,6 +277,7 @@ Allowed dependencies:
 - `WorkspaceShellDesignSystem`: WorkspaceCore, SwiftUI.
 - `WorkspaceAutomationBridge`: WorkspaceCore.
 - `WorkspaceServerClient`: WorkspaceCore, Comet, CometTCA, TCA.
+- `WorkspaceServerTesting`: WorkspaceServerClient, Comet, CometTesting.
 - `MacWorkspaceShell`: WorkspaceCore, WorkspaceTCA, WorkspaceShellDesignSystem,
   SwiftUI, AppKit as needed.
 - `IOSWorkspaceShell`: WorkspaceCore, WorkspaceTCA, WorkspaceShellDesignSystem,

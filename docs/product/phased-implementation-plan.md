@@ -1,6 +1,6 @@
 # Phased Implementation Plan
 
-Last updated: 2026-06-27
+Last updated: 2026-06-28
 
 ## Purpose
 
@@ -281,10 +281,15 @@ Progress:
   gate in `docs/features/server-side-companion.md`.
 - Added optional `WorkspaceServerClient` backed by Comet.
 - Added typed health, entitlement, template, job, and diagnostics requests.
+- Added Comet 0.4.1 request metadata, retry, deduplication, cache-policy, and
+  diagnostic event snapshots for the server client.
 - Added `Effect.workspaceServerRequest` for TCA reducers that opt into server
   effects.
 - Added `CometTesting` coverage for request paths, methods, payloads, and
   decoding.
+- Added optional `WorkspaceServerTesting` helpers for recording cassettes,
+  replaying approved fixtures, promoting cassettes to strict contracts, and
+  writing contract reports.
 - Kept server behavior outside `WorkspaceCore`, `WorkspaceTCA`, persistence,
   and platform shells.
 

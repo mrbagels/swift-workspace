@@ -11,7 +11,7 @@ Available guides:
 - [Persistence adapter guide](persistence.md)
 - [CloudKit adoption guide](cloudkit.md)
 - [Automation bridge guide](automation.md)
-- [Server client guide](server-client.md)
+- [Server client and testing guide](server-client.md)
 - [Prototype migration guide](prototype-migration.md)
 
 Starter app targets:

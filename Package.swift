@@ -17,6 +17,7 @@ let package = Package(
     .library(name: "WorkspaceSQLiteData", targets: ["WorkspaceSQLiteData"]),
     .library(name: "WorkspaceCloudKit", targets: ["WorkspaceCloudKit"]),
     .library(name: "WorkspaceServerClient", targets: ["WorkspaceServerClient"]),
+    .library(name: "WorkspaceServerTesting", targets: ["WorkspaceServerTesting"]),
     .library(name: "WorkspaceShellDesignSystem", targets: ["WorkspaceShellDesignSystem"]),
     .library(name: "MacWorkspaceShell", targets: ["MacWorkspaceShell"]),
     .library(name: "IOSWorkspaceShell", targets: ["IOSWorkspaceShell"]),
@@ -32,7 +33,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/mrbagels/comet",
-      from: "0.1.0"
+      from: "0.4.1"
     ),
   ],
   targets: [
@@ -100,6 +101,14 @@ let package = Package(
           name: "ComposableArchitecture",
           package: "swift-composable-architecture"
         ),
+      ]
+    ),
+    .target(
+      name: "WorkspaceServerTesting",
+      dependencies: [
+        "WorkspaceServerClient",
+        .product(name: "Comet", package: "comet"),
+        .product(name: "CometTesting", package: "comet"),
       ]
     ),
     .target(
@@ -185,6 +194,12 @@ let package = Package(
       dependencies: [
         "WorkspaceServerClient",
         .product(name: "CometTesting", package: "comet"),
+      ]
+    ),
+    .testTarget(
+      name: "WorkspaceServerTestingTests",
+      dependencies: [
+        "WorkspaceServerTesting",
       ]
     ),
   ]
