@@ -15,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/mrbagels/comet",
       "state" : {
-        "revision" : "fafc9e72ad23d823e7b77fb0405d9da11d0371ff",
-        "version" : "0.1.0"
+        "revision" : "6563d758bb08c2358043d077f96931920fff4ea0",
+        "version" : "0.4.2"
       }
     },
     {
@@ -159,8 +159,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/swift-structured-queries",
       "state" : {
-        "revision" : "b59f4424b9050739ac7c2d82e80edf5e6dbb19e8",
-        "version" : "0.31.3"
+        "revision" : "859958c7cf76918abf5aa5d6ce8b068e00a77eb2",
+        "version" : "0.32.0"
       }
     },
     {
@@ -179,6 +179,15 @@
       "state" : {
         "revision" : "401bf70d95bfe8db2a1dc619f9e175a85c089321",
         "version" : "1.10.1"
+      }
+    },
+    {
+      "identity" : "yams",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/jpsim/Yams.git",
+      "state" : {
+        "revision" : "a27b21e0c81c5bf42049b897a62aaf387e80f279",
+        "version" : "6.2.2"
       }
     }
   ],

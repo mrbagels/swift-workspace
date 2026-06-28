@@ -15,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/mrbagels/comet",
       "state" : {
-        "revision" : "6b924235d3295cba310ae73bc8e2994b745677ed",
-        "version" : "0.4.1"
+        "revision" : "6563d758bb08c2358043d077f96931920fff4ea0",
+        "version" : "0.4.2"
       }
     },
     {

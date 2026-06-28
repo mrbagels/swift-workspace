@@ -172,6 +172,7 @@ renderer products. CI runs from `.github/workflows/swift-workspace.yml` and uses
 
 The initial public beta is versioned as `0.1.0`, published from
 `https://github.com/mrbagels/swift-workspace`, and licensed under MIT.
+The current patch release is `0.1.1`.
 
 DocC landing pages are scaffolded in each public product target:
 

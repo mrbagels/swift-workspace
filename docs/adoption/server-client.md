@@ -134,7 +134,7 @@ try await contract.writeReport(
 
 ## OpenAPI Generation
 
-Comet 0.4.1 includes the `CometOpenAPIPlugin` command plugin. Use it for
+Comet 0.4.1 and newer include the `CometOpenAPIPlugin` command plugin. Use it for
 app-specific generated clients or to validate a companion API contract before
 hand-curating workspace-facing models:
 

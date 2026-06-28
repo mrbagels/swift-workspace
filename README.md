@@ -32,7 +32,7 @@
     <img alt="Platforms" src="https://img.shields.io/badge/platforms-macOS%2026%20%7C%20iOS%2026-0A84FF?style=flat-square">
   </a>
   <a href="docs/operations/release-checklist.md">
-    <img alt="Version 0.1.0" src="https://img.shields.io/badge/version-0.1.0-6E56CF?style=flat-square">
+    <img alt="Version 0.1.1" src="https://img.shields.io/badge/version-0.1.1-6E56CF?style=flat-square">
   </a>
   <a href="https://github.com/pointfreeco/swift-composable-architecture">
     <img alt="TCA ready" src="https://img.shields.io/badge/TCA-ready-111827?style=flat-square">
@@ -88,7 +88,7 @@ Add the package in Xcode or SwiftPM:
 ```swift
 .package(
   url: "https://github.com/mrbagels/swift-workspace",
-  from: "0.1.0"
+  from: "0.1.1"
 )
 ```
 
@@ -438,8 +438,9 @@ VERIFY_BUILD_IOS=1 VERIFY_RUN_UI_TESTS=1 scripts/verify.sh
 ## Release
 
 Initial public beta: `0.1.0`
+Latest patch release: `0.1.1`
 
-Before tagging, run the release checklist and manually inspect the Mac and iOS
+Before tagging a release, run the release checklist and manually inspect the Mac and iOS
 demos:
 
 - [API review checklist](docs/operations/api-review-checklist.md)

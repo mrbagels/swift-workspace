@@ -281,7 +281,7 @@ Progress:
   gate in `docs/features/server-side-companion.md`.
 - Added optional `WorkspaceServerClient` backed by Comet.
 - Added typed health, entitlement, template, job, and diagnostics requests.
-- Added Comet 0.4.1 request metadata, retry, deduplication, cache-policy, and
+- Added Comet 0.4.1+ request metadata, retry, deduplication, cache-policy, and
   diagnostic event snapshots for the server client.
 - Added `Effect.workspaceServerRequest` for TCA reducers that opt into server
   effects.
@@ -301,9 +301,8 @@ Decision-Gated:
 
 ## Phase 7: Distribution And Adoption
 
-Status: in progress. Adoption docs, local release checklists, DocC catalogs,
-documentation checks, and CI automation are in place; public release work still
-needs versioning and repository decisions.
+Status: complete for public beta distribution and patch release alignment.
+Continue updating adoption docs as consumers report friction.
 
 Goal:
 
@@ -348,10 +347,8 @@ Progress:
 - Selected `0.1.0` as the initial public beta version, MIT as the license, and
   `https://github.com/mrbagels/swift-workspace` as the public repository.
 - Completed the `0.1.0` API stability review.
-
-Remaining:
-
-- Tag a semantic version after manual demo review and Comet release alignment.
+- Added the `0.1.1` patch release alignment for Comet 0.4.1+ server workflows,
+  verified against Comet 0.4.2.
 
 ## Phase 8: Professional Polish
 
